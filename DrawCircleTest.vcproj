@@ -41,13 +41,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="./common/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="common.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -171,7 +173,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\libs.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\main_plus.cpp"
 				>
 			</File>
 			<File
@@ -201,6 +211,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\main_plus.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -228,6 +242,94 @@
 			</File>
 			<File
 				RelativePath=".\small.ico"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="common"
+			>
+			<File
+				RelativePath=".\common\arrayutil.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\optional.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\stdint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\trace.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\common\trace.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\varray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common\winutil.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\common\winutil.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="graphics"
+			>
+			<File
+				RelativePath=".\graphics\graphics.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics.h"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawCircle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawCircleAA.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawCircleAA2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawLinearGradient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawRadialGradient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawRectangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_DrawTriangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_impl_common.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graphics\graphics_impl_common.h"
 				>
 			</File>
 		</Filter>

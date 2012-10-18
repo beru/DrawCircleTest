@@ -1,8 +1,13 @@
-// DrawCircleTest.cpp : アプリケーションのエントリ ポイントを定義します。
+// mg.cpp : アプリケーションのエントリ ポイントを定義します。
 //
 
 #include "stdafx.h"
 #include "resource.h"
+
+#include "main_plus.h"
+#include "mmsystem.h"
+
+#include <assert.h>
 
 #define MAX_LOADSTRING 100
 
@@ -24,34 +29,49 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-
+	
  	// TODO: ここにコードを挿入してください。
 	MSG msg;
 	HACCEL hAccelTable;
-
+	
 	// グローバル文字列を初期化しています。
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_DRAWCIRCLETEST, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
-
+	
 	// アプリケーションの初期化を実行します:
 	if (!InitInstance (hInstance, nCmdShow))
 	{
 		return FALSE;
 	}
-
+	
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRAWCIRCLETEST));
-
+	
+	static const size_t MS_PER_FRAME = 20;
+	DWORD lastTime = ::timeGetTime() + MS_PER_FRAME;
+	
 	// メイン メッセージ ループ:
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
+	while (1) {
+		BOOL ret = GetMessage(&msg, NULL, 0, 0);
+		if (ret == 0 || ret == -1) {
+			if (ret == -1) {
+				DWORD err = ::GetLastError();
+				assert(false);
+			}
+			break;
+		}
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		DWORD now = ::timeGetTime();
+		if (now - lastTime >= MS_PER_FRAME) {
+			OnTime(msg.hwnd);
+			lastTime += MS_PER_FRAME;
+		}
 	}
-
+	
 	return (int) msg.wParam;
 }
 
@@ -76,14 +96,15 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
+	wcex.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wcex.lpfnWndProc	= WndProc;
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= hInstance;
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_DRAWCIRCLETEST));
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+//	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+	wcex.hbrBackground	= 0; //(HBRUSH)GetStockObject(NULL_BRUSH);
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_DRAWCIRCLETEST);
 	wcex.lpszClassName	= szWindowClass;
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -107,7 +128,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance; // グローバル変数にインスタンス処理を格納します。
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   hWnd = CreateWindow(szWindowClass, szTitle,
+	   WS_OVERLAPPED
+	   |WS_CLIPCHILDREN
+	   |WS_CLIPSIBLINGS
+	   |WS_CAPTION
+	   |WS_SYSMENU
+	   |WS_MINIMIZEBOX
+	   |WS_MAXIMIZEBOX
+	   |WS_THICKFRAME
+	   ,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
@@ -134,9 +164,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
-	PAINTSTRUCT ps;
-	HDC hdc;
-
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -155,13 +182,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		// TODO: 描画コードをここに追加してください...
-		EndPaint(hWnd, &ps);
+	case WM_CREATE:
+		OnCreate(hWnd, wParam, lParam);
 		break;
 	case WM_DESTROY:
+		OnDestroy(hWnd, wParam, lParam);
 		PostQuitMessage(0);
+		break;
+	case WM_ERASEBKGND:
+		return TRUE;
+		break;
+	case WM_PAINT:
+		OnPaint(hWnd, wParam, lParam);
+		break;
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+//		::SetCapture(hWnd);
+		OnMouseDown(hWnd, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+//		if (::GetCapture() == hWnd) {
+//			::ReleaseCapture();
+			OnMouseUp(hWnd, wParam, lParam);
+//		}
+		break;
+	case WM_MOUSEMOVE:
+//		if (::GetCapture() == hWnd) {
+			OnMouseMove(hWnd, wParam, lParam);
+//		}
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
