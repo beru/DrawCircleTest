@@ -2,7 +2,18 @@
 
 namespace Graphics {
 
-pixel_t global_lcd_framebuffer[HEIGHT][WIDTH];
+pixel_t* buff_;
+uint16_t width_;
+uint16_t height_;
+int32_t stride_;
+
+void SetCanvas(void* buff, uint16_t width, uint16_t height, int32_t stride)
+{
+	buff_ = (pixel_t*) buff;
+	width_ = width;
+	height_ = height;
+	stride_ = stride;
+}
 
 void PutPixel(uint16_t x, uint16_t y, pixel_t color)
 {

@@ -5,21 +5,23 @@
 
 namespace Graphics {
 
-static const uint16_t WIDTH = 1920;
-static const uint16_t HEIGHT = 1080;
-
-extern pixel_t global_lcd_framebuffer[HEIGHT][WIDTH];
+extern pixel_t* buff_;
+extern uint16_t width_;
+extern uint16_t height_;
+extern int32_t stride_;
 
 static inline
 int getLineOffset()
 {
-	return WIDTH * sizeof(pixel_t);
+	return stride_;
 }
 
 static inline
 pixel_t* getPixelPtr(uint16_t x, uint16_t y)
 {
-	return &global_lcd_framebuffer[y][x];
+	pixel_t* ptr = buff_ + x;
+	OffsetPtr(ptr, y*stride_);
+	return ptr;
 }
 
 static inline

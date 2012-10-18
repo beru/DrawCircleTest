@@ -65,6 +65,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -306,10 +307,6 @@
 			</File>
 			<File
 				RelativePath=".\graphics\graphics_DrawCircleAA2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\graphics\graphics_DrawLinearGradient.cpp"
 				>
 			</File>
 			<File

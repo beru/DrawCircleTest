@@ -30,14 +30,14 @@ void fillSolidRectangle(int16_t x, int16_t y, uint16_t w, uint16_t h, uint32_t c
 		h2 += y;
 	}
 
-	if (x2 >= WIDTH || y2>= HEIGHT) {
+	if (x2 >= width_ || y2>= height_) {
 		return;
 	}
-	if (x2 + w2 >= WIDTH) {
-		w2 = WIDTH - x2;
+	if (x2 + w2 >= width_) {
+		w2 = width_ - x2;
 	}
-	if (y2 + h2 >= HEIGHT) {
-		h2 = HEIGHT - y2;
+	if (y2 + h2 >= height_) {
+		h2 = height_ - y2;
 	}
 	
 	pixel_t* ptr = getPixelPtr(x2, y2);

@@ -113,13 +113,13 @@ void DrawRadialGradient(
 	sy = max<float>(sy, 0);
 	
 	ey = min<float>(ey, clippingRect.y+clippingRect.h);
-	ey = min<float>(ey, HEIGHT);
+	ey = min<float>(ey, height_);
 	
 	sx = max<float>(sx, clippingRect.x);
 	sx = max<float>(sx, 0);
 
 	ex = min<float>(ex, clippingRect.x+clippingRect.w);
-	ex = min<float>(ex, WIDTH);
+	ex = min<float>(ex, width_);
 	
 	// 中心から描画領域の端までの距離の半径に対しての比率を出す。
 	// 中心点からの描画領域の左端の距離と右端の距離のうち、長い方を求める。

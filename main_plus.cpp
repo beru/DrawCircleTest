@@ -9,6 +9,8 @@
 #include "winutil.h"
 #include "arrayutil.h"
 
+#include "graphics/graphics.h"
+
 namespace {
 
 HWND hWnd;
@@ -40,6 +42,13 @@ void OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	hBMP = CreateDIB(width, -height, bitsPerPixel, bmi, pBits);
 #endif
 	
+	HDC hWndDC = ::GetDC(hWnd);
+	hMemDC = ::CreateCompatibleDC(hWndDC);
+	::SetMapMode(hMemDC, ::GetMapMode(hWndDC));
+	::ReleaseDC(hWnd, hWndDC);
+	::SelectObject(hMemDC, hBMP);
+
+	Graphics::SetCanvas(pBits, width, height, width*4);
 }
 
 void OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -90,4 +99,23 @@ void OnMouseMove(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 void OnTime(HWND hWnd)
 {
+	if (!IsWindow(hWnd)) {
+		return;
+	}
+	static float x = 400;
+	static float y = 400;
+	float radius = 200;
+	float diameter = radius*2;
+
+	RECT rec;
+	rec.left = x-radius-1;
+	rec.top = y-radius-1;
+	rec.right = rec.left + diameter+1;
+	rec.bottom = rec.top + diameter+1;
+	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
+	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
+	::InvalidateRect(hWnd, &rec, FALSE);
+
+	x += 0.01;
+	y += 0.01;
 }
