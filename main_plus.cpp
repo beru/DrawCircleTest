@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 
 #include "main_plus.h"
 #include <assert.h>
@@ -102,20 +102,20 @@ void OnTime(HWND hWnd)
 	if (!IsWindow(hWnd)) {
 		return;
 	}
-	static float x = 400;
-	static float y = 400;
-	float radius = 200;
+	static float x = 600;
+	static float y = 600;
+	float radius = 400;
 	float diameter = radius*2;
 
 	RECT rec;
 	rec.left = x-radius-1;
 	rec.top = y-radius-1;
-	rec.right = rec.left + diameter+1;
-	rec.bottom = rec.top + diameter+1;
+	rec.right = rec.left + diameter+2;
+	rec.bottom = rec.top + diameter+2;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
 	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
 	::InvalidateRect(hWnd, &rec, FALSE);
 
-	x += 0.01;
-	y += 0.01;
+	x += 0.1;
+	y += 0;
 }

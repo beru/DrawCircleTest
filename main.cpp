@@ -1,8 +1,12 @@
 // mg.cpp : アプリケーションのエントリ ポイントを定義します。
 //
 
-#include "stdafx.h"
 #include "resource.h"
+
+#include "targetver.h"
+#include <windows.h>
+
+#include <tchar.h>
 
 #include "main_plus.h"
 #include "mmsystem.h"

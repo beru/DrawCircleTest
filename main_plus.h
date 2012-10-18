@@ -1,5 +1,8 @@
 #pragma once
 
+#include "targetver.h"
+#include <windows.h>
+
 void OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 void OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 void OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);

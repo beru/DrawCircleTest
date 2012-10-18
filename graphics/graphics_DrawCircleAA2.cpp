@@ -199,7 +199,7 @@ void drawLine2(
 	}
 #endif
 	
-#if 1
+#if 0
 	// âEë§ 0ÅãÅ` -45Åã
 	if ((int)yPlus != (int)prevYPlus) {
 		float rightArea = prescaledCurvedPart * frac(prevYPlus);
@@ -231,7 +231,11 @@ void drawHalf2(
 	CircleSegment cl = circleSegments[0];
 	float prevLen = cl.length * radius;
 	float prevArea = cl.area;
-	float tx = frac(cx) * ratioRadius;
+	float fraccx = frac(cx);
+	float tx = 0;
+	if (fraccx) {
+		tx += fraccx * ratioRadius;
+	}
 	size_t cnt = radius*xylen45deg;
 	for (size_t i=1; i<=cnt; ++i) {
 		tx += ratioRadius;
