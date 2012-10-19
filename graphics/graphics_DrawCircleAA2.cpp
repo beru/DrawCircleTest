@@ -69,22 +69,20 @@ void drawLine(
 	int16_t py,
 	float cx,
 	pixel_t color,
-	float area,
-	float prevArea,
-	float len,
-	float prevLen,
+	CircleSegment seg,
+	CircleSegment prevSeg,
 	int tail
 	)
 {
-	float areaDiff = area - prevArea;	// 面積の差分が今回のライン分の面積
-	float lenDiff = prevLen - len;
-	float curvedPart = areaDiff - len;	// 矩形部分を切り取る
+	float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
+	float lenDiff = prevSeg.length - seg.length;
+	float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
 	float prescaledCurvedPart = curvedPart / lenDiff;
 
-	float xMinus = cx - len;
-	float xPlus = cx + len;
-	float prevXMinus = cx - prevLen;
-	float prevXPlus = cx + prevLen;
+	float xMinus = cx - seg.length;
+	float xPlus = cx + seg.length;
+	float prevXMinus = cx - prevSeg.length;
+	float prevXPlus = cx + prevSeg.length;
 	
 	// X座標の整数値が異なる場合は横2pixelに跨る。
 	// 左側 180°～225°
@@ -115,6 +113,22 @@ void drawLine(
 	}
 }
 
+// 描画先のピクセル境界に相当する位置と面積の計算
+CircleSegment lerpCircleSegment(float pos, float radius, float rr)
+{
+	CircleSegment seg0 = circleSegments[pos];
+	CircleSegment seg1 = circleSegments[pos + 1];
+	CircleSegment diff;
+	diff.length = seg1.length - seg0.length;
+	diff.area = seg1.area - seg0.area;
+	
+	float fraction = frac(pos);
+	CircleSegment ret;
+	ret.length = (seg0.length + diff.length * fraction) * radius;
+	ret.area = (seg0.area + diff.area * fraction) * rr;
+	return ret;
+}
+	
 void drawHalf(
 	float cx,
 	float cy,
@@ -127,8 +141,9 @@ void drawHalf(
 	float ratioRadius = TABLE_RADIUS / radius;
 	
 	CircleSegment cl = circleSegments[0];
-	float prevLen = cl.length * radius;
-	float prevArea = cl.area;
+	CircleSegment prevSeg;
+	prevSeg.length = cl.length * radius;
+	prevSeg.area = cl.area * rr;
 	int16_t py = cy;
 	float fracy = frac(cy);
 	float ty = 0;
@@ -139,81 +154,63 @@ void drawHalf(
 	for (size_t i=1; i<=cnt; ++i) {
 		py += direction;
 		ty += ratioRadius;
-		float tyFrac = frac(ty);
-		CircleSegment seg0 = circleSegments[ty];
-		CircleSegment seg1 = circleSegments[ty + 1];
-		CircleSegment segDiff;
-		segDiff.length = seg1.length - seg0.length;
-		segDiff.area = seg1.area - seg0.area;
-		// 描画先のピクセル境界に相当する位置の計算
-		float len = (seg0.length + segDiff.length * tyFrac) * radius;
-		float area = (seg0.area + segDiff.area * tyFrac) * rr;
-		
-		drawLine(py,cx,color,area,prevArea,len,prevLen,0);
-
-		prevLen = len;
-		prevArea = area;
+		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
+		drawLine(py,cx,color,seg,prevSeg,0);
+		prevSeg= seg;
 	}
 }
 
 void drawLine2(
-	int offset,
-	float cx,
+	int16_t x,
+	int16_t x2,
 	float cy,
 	pixel_t color,
-	float area,
-	float prevArea,
-	float len,
-	float prevLen,
+	CircleSegment seg, CircleSegment prevSeg,
 	int tail
 	)
 {
-	float areaDiff = area - prevArea;	// 面積の差分が今回のライン分の面積
-	float lenDiff = prevLen - len;
-	float curvedPart = areaDiff - len;	// 矩形部分を切り取る
+	float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
+	float lenDiff = prevSeg.length - seg.length;
+	float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
 	float prescaledCurvedPart = curvedPart / lenDiff;
 
-	float yMinus = cy - len + 1;
-	float prevYMinus = cy - prevLen + 1;
-	float yPlus = cy + len;
-	float prevYPlus = cy + prevLen;
+	float yMinus = cy - seg.length + 1;
+	float prevYMinus = cy - prevSeg.length + 1;
+	float yPlus = cy + seg.length;
+	float prevYPlus = cy + prevSeg.length;
 	
+	int iyMinus = (int)yMinus;
+	int iyPlus = (int)yPlus;
 #if 1
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
-	// 左側 180°～225°
-	if ((int)yMinus != (int)prevYMinus) {
+	// 上側
+	if (iyMinus != (int)prevYMinus) {
 		float leftArea = prescaledCurvedPart * (1.0f - frac(prevYMinus));
 //		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 		float rightRectArea = 1.0f - frac(yMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-		setPixel(cx+offset, yMinus-1, leftArea*255.0f);
-		setPixel(cx+offset, yMinus, rightArea*255.0f);
-		setPixel(cx-offset, yMinus-1, leftArea*255.0f);
-		setPixel(cx-offset, yMinus, rightArea*255.0f);
-		DrawHorizontalLine(cx+1-offset, cx+offset, yMinus, color);
+		setPixel(x, iyMinus-1, leftArea*255.0f);
+		setPixel(x, iyMinus, rightArea*255.0f);
 	}else {
 //		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 		float remain = curvedPart + ceil(yMinus) - yMinus;
-		setPixel(cx+offset, yMinus, remain*255.0f);
-		setPixel(cx-offset, yMinus, remain*255.0f);
+		setPixel(x, iyMinus, remain*255.0f);
 	}
 #endif
+	// 中間線
+	DrawVerticalLine(x2, iyMinus+1, iyPlus, color);
 	
-#if 0
-	// 右側 0°～ -45°
-	if ((int)yPlus != (int)prevYPlus) {
+#if 1
+	// 下側
+	if (iyPlus != (int)prevYPlus) {
 		float rightArea = prescaledCurvedPart * frac(prevYPlus);
 		float leftRectArea = frac(yPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(cx+offset, yPlus, leftArea*255.0f);
-		setPixel(cx+offset, yPlus+1, rightArea*255.0f);
-		setPixel(cx-offset, yPlus, leftArea*255.0f);
-		setPixel(cx-offset, yPlus+1, rightArea*255.0f);
-		DrawHorizontalLine(cx+1-offset, cx+offset, yPlus, color);
+		setPixel(x2, iyPlus, leftArea*255.0f);
+		setPixel(x2, iyPlus+1, rightArea*255.0f);
 	}else {
-		float remain = areaDiff - ((int)yPlus - cy);
-		setPixel(cx+offset, yPlus, remain*255.0f);
-		setPixel(cx-offset, yPlus, remain*255.0f);
+		float remain = areaDiff - (iyPlus - cy);
+		setPixel(x2, iyPlus, remain*255.0f);
 	}
 #endif
 }
@@ -229,30 +226,33 @@ void drawHalf2(
 	float ratioRadius = TABLE_RADIUS / radius;
 	
 	CircleSegment cl = circleSegments[0];
-	float prevLen = cl.length * radius;
-	float prevArea = cl.area;
+	CircleSegment prevSeg, prevSeg2;
+	prevSeg.length = cl.length * radius;
+	prevSeg.area = cl.area * rr;
+	prevSeg2 = prevSeg;
 	float fraccx = frac(cx);
 	float tx = 0;
+	float tx2 = 0;
 	if (fraccx) {
 		tx += fraccx * ratioRadius;
+		tx2 -= fraccx * ratioRadius;
+	}
+	if (frac(cy)) {
+		cy -= 1.0;
 	}
 	size_t cnt = radius*xylen45deg;
 	for (size_t i=1; i<=cnt; ++i) {
 		tx += ratioRadius;
-		float txFrac = frac(tx);
-		CircleSegment seg0 = circleSegments[tx];
-		CircleSegment seg1 = circleSegments[tx + 1];
-		CircleSegment segDiff;
-		segDiff.length = seg1.length - seg0.length;
-		segDiff.area = seg1.area - seg0.area;
-		// 描画先のピクセル境界に相当する位置の計算
-		float len = (seg0.length + segDiff.length * txFrac) * radius;
-		float area = (seg0.area + segDiff.area * txFrac) * rr;
+		CircleSegment seg = lerpCircleSegment(tx, radius, rr);
+		tx2 += ratioRadius;
+		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
+		// 左
+		drawLine2(cx-i,cx-i-1,cy,color, seg,prevSeg,0);
+		// 右
+		drawLine2(cx+i-1,cx+i,cy,color, seg2,prevSeg2,0);
 		
-		drawLine2(i,cx,cy,color,area,prevArea,len,prevLen,0);
-		
-		prevLen = len;
-		prevArea = area;
+		prevSeg = seg;
+		prevSeg2 = seg2;
 	}
 }
 
