@@ -151,7 +151,7 @@ void drawHalf(
 		ty += direction * (1.0-fracy) * ratioRadius;
 	}
 	size_t cnt = radius*xylen45deg;
-	for (size_t i=1; i<=cnt; ++i) {
+	for (size_t i=1; i<=cnt+2; ++i) {
 		py += direction;
 		ty += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
@@ -163,6 +163,8 @@ void drawHalf(
 void drawLine2(
 	int16_t x,
 	int16_t x2,
+	int16_t xoffset,
+	float cx,
 	float cy,
 	pixel_t color,
 	CircleSegment seg, CircleSegment prevSeg,
@@ -191,14 +193,13 @@ void drawLine2(
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 		setPixel(x, iyMinus-1, leftArea*255.0f);
 		setPixel(x, iyMinus, rightArea*255.0f);
+		DrawHorizontalLine(x+xoffset, cx, iyMinus, color);
 	}else {
 //		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 		float remain = curvedPart + ceil(yMinus) - yMinus;
 		setPixel(x, iyMinus, remain*255.0f);
 	}
 #endif
-	// ’†ŠÔü
-	DrawVerticalLine(x2, iyMinus+1, iyPlus, color);
 	
 #if 1
 	// ‰º‘¤
@@ -208,6 +209,7 @@ void drawLine2(
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
 		setPixel(x2, iyPlus, leftArea*255.0f);
 		setPixel(x2, iyPlus+1, rightArea*255.0f);
+		DrawHorizontalLine(cx, x2+xoffset, iyPlus, color);
 	}else {
 		float remain = areaDiff - (iyPlus - cy);
 		setPixel(x2, iyPlus, remain*255.0f);
@@ -247,9 +249,9 @@ void drawHalf2(
 		tx2 += ratioRadius;
 		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
 		// ¶
-		drawLine2(cx-i,cx-i-1,cy,color, seg,prevSeg,0);
+		drawLine2(cx-i,cx-i-1,+1,cx,cy,color, seg,prevSeg,0);
 		// ‰E
-		drawLine2(cx+i-1,cx+i,cy,color, seg2,prevSeg2,0);
+		drawLine2(cx+i-1,cx+i,0,cx,cy,color, seg2,prevSeg2,0);
 		
 		prevSeg = seg;
 		prevSeg2 = seg2;

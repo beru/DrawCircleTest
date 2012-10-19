@@ -104,18 +104,18 @@ void OnTime(HWND hWnd)
 	}
 	static float x = 600;
 	static float y = 600;
-	float radius = 300;
+	float radius = 100;
 	float diameter = radius*2;
 
 	RECT rec;
 	rec.left = x-radius-1;
 	rec.top = y-radius-1;
-	rec.right = rec.left + diameter+2;
-	rec.bottom = rec.top + diameter+2;
+	rec.right = rec.left + diameter+10;
+	rec.bottom = rec.top + diameter+10;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
 	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
 	::InvalidateRect(hWnd, &rec, FALSE);
 
 	x += 0.01;
-	y += 0.01;
+//	y += 0.1;
 }
