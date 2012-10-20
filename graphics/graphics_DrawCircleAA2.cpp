@@ -33,7 +33,7 @@ static const float xylen45deg = sqrt(2.0)/2;	// 円45度位置の中心からの縦横長さ
 static
 void initTable(int tableRadius)
 {
-	circleSegments.resize(tableRadius * xylen45deg + 15);
+	circleSegments.resize(tableRadius * xylen45deg * 1.5);
 	const float radius = 1.0;
 	float rr = radius * radius;
 	float CIRCLE_AREA = M_PI * rr;
@@ -153,7 +153,7 @@ void drawHalf(
 	}
 	CircleSegment prevSeg = lerpCircleSegment(ty, radius, rr);
 	size_t cnt = radius*xylen45deg;
-	for (; i<=cnt+2; ++i) {
+	for (; i<cnt+2; ++i) {
 		py += direction;
 		ty += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
@@ -193,13 +193,13 @@ void drawLine2(
 //		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 		float rightRectArea = 1.0f - frac(yMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-		setPixel(x, iyMinus-1, leftArea*255.0f);
-		setPixel(x, iyMinus, rightArea*255.0f);
-		DrawHorizontalLine(x+xoffset, cx, iyMinus, color);
+		setPixel(x, iyMinus, leftArea*255.0f);
+		setPixel(x, iyMinus+1, rightArea*255.0f);
+		DrawHorizontalLine(x+xoffset, cx, iyMinus+1, color);
 	}else {
 //		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 		float remain = curvedPart + ceil(yMinus) - yMinus;
-		setPixel(x, iyMinus, remain*255.0f);
+		setPixel(x, iyMinus+1, remain*255.0f);
 	}
 #endif
 	
@@ -209,12 +209,12 @@ void drawLine2(
 		float rightArea = prescaledCurvedPart * frac(prevYPlus);
 		float leftRectArea = frac(yPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(x2, iyPlus+1, leftArea*255.0f);
-		setPixel(x2, iyPlus+2, rightArea*255.0f);
-		DrawHorizontalLine(cx, x2+xoffset, iyPlus+1, color);
+		setPixel(x2, iyPlus, leftArea*255.0f);
+		setPixel(x2, iyPlus+1, rightArea*255.0f);
+		DrawHorizontalLine(cx, x2+xoffset, iyPlus, color);
 	}else {
 		float remain = areaDiff - (iyPlus - cy);
-		setPixel(x2, iyPlus+1, remain*255.0f);
+		setPixel(x2, iyPlus, remain*255.0f);
 	}
 #endif
 }
@@ -247,7 +247,19 @@ void drawHalf2(
 	if (frac(cy)) {
 		cy -= 1.0;
 	}
-	for (; i<=cnt; ++i) {
+	{
+		// 左
+		CircleSegment seg = lerpCircleSegment(tx+ratioRadius, radius, rr);
+		if ((int)(cy+seg.length)==(int)(cy+prevSeg.length)) {
+			drawLine2(cx-i,cx-i,+1,cx,cy,color, seg,prevSeg,0);
+		}
+		// 右
+		CircleSegment seg2 = lerpCircleSegment(tx2+ratioRadius, radius, rr);
+		if ((int)(cy+seg2.length)==(int)(cy+prevSeg2.length)) {
+			drawLine2(cx+i-1,cx+i-1,0,cx,cy,color, seg2,prevSeg2,0);
+		}
+	}
+	for (; i<cnt+2; ++i) {
 		tx += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(tx, radius, rr);
 		tx2 += ratioRadius;
