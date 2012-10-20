@@ -140,18 +140,20 @@ void drawHalf(
 	float rr = radius * radius;
 	float ratioRadius = TABLE_RADIUS / radius;
 	
-	CircleSegment cl = circleSegments[0];
-	CircleSegment prevSeg;
-	prevSeg.length = cl.length * radius;
-	prevSeg.area = cl.area * rr;
 	int16_t py = cy;
 	float fracy = frac(cy);
 	float ty = 0;
 	if (fracy) {
 		ty += direction * (1.0-fracy) * ratioRadius;
 	}
+	size_t i = 1;
+	if (ty < 0) {
+		ty += ratioRadius;
+		++i;
+	}
+	CircleSegment prevSeg = lerpCircleSegment(ty, radius, rr);
 	size_t cnt = radius*xylen45deg;
-	for (size_t i=1; i<=cnt+2; ++i) {
+	for (; i<=cnt+2; ++i) {
 		py += direction;
 		ty += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
@@ -207,12 +209,12 @@ void drawLine2(
 		float rightArea = prescaledCurvedPart * frac(prevYPlus);
 		float leftRectArea = frac(yPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(x2, iyPlus, leftArea*255.0f);
-		setPixel(x2, iyPlus+1, rightArea*255.0f);
-		DrawHorizontalLine(cx, x2+xoffset, iyPlus, color);
+		setPixel(x2, iyPlus+1, leftArea*255.0f);
+		setPixel(x2, iyPlus+2, rightArea*255.0f);
+		DrawHorizontalLine(cx, x2+xoffset, iyPlus+1, color);
 	}else {
 		float remain = areaDiff - (iyPlus - cy);
-		setPixel(x2, iyPlus, remain*255.0f);
+		setPixel(x2, iyPlus+1, remain*255.0f);
 	}
 #endif
 }
@@ -227,11 +229,6 @@ void drawHalf2(
 	float rr = radius * radius;
 	float ratioRadius = TABLE_RADIUS / radius;
 	
-	CircleSegment cl = circleSegments[0];
-	CircleSegment prevSeg, prevSeg2;
-	prevSeg.length = cl.length * radius;
-	prevSeg.area = cl.area * rr;
-	prevSeg2 = prevSeg;
 	float fraccx = frac(cx);
 	float tx = 0;
 	float tx2 = 0;
@@ -239,11 +236,18 @@ void drawHalf2(
 		tx += fraccx * ratioRadius;
 		tx2 -= fraccx * ratioRadius;
 	}
+	size_t i = 1;
+	size_t cnt = radius*xylen45deg;
+	if (tx2 < 0) {
+		tx += ratioRadius;
+		tx2 += ratioRadius;
+	}
+	CircleSegment prevSeg = lerpCircleSegment(tx, radius, rr);
+	CircleSegment prevSeg2 = lerpCircleSegment(tx2, radius, rr);
 	if (frac(cy)) {
 		cy -= 1.0;
 	}
-	size_t cnt = radius*xylen45deg;
-	for (size_t i=1; i<=cnt; ++i) {
+	for (; i<=cnt; ++i) {
 		tx += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(tx, radius, rr);
 		tx2 += ratioRadius;
