@@ -102,11 +102,11 @@ void OnTime(HWND hWnd)
 	if (!IsWindow(hWnd)) {
 		return;
 	}
-	static float x = 600.1;
-	static float y = 300.1;
+	static float x = 601.5;
+	static float y = 300.0;
 	static float radius = 100;
 	float diameter = radius*2;
-
+	
 	RECT rec;
 	rec.left = x-radius-1;
 	rec.top = y-radius-1;
@@ -116,7 +116,7 @@ void OnTime(HWND hWnd)
 	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
 	::InvalidateRect(hWnd, &rec, FALSE);
 
-//	x += 0.02;
-//	y += 0.01;
+	x += 0.01;
+	y += 0.01;
 	radius += 0.01;
 }
