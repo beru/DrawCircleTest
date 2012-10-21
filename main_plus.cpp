@@ -1,6 +1,7 @@
 
 
 #include "main_plus.h"
+#include <windowsx.h>
 #include <assert.h>
 
 #include "stdint.h"
@@ -95,10 +96,20 @@ void OnMouseUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 //	}
 }
 
+static float x_ = 601.5;
+static float y_ = 310.0;
+static float prevX_ = x_;
+static float prevY_ = y_;
+
 void OnMouseMove(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 //	if (wParam & MK_LBUTTON) {
 //	}
+	prevX_ = x_;
+	prevY_ = y_;
+
+	x_ = GET_X_LPARAM(lParam);
+	y_ = GET_Y_LPARAM(lParam);
 }
 
 void OnTime(HWND hWnd)
@@ -106,24 +117,19 @@ void OnTime(HWND hWnd)
 	if (!IsWindow(hWnd)) {
 		return;
 	}
-	static float x = 601.5;
-	static float y = 300.0;
 	static float radius = 300;
 	float diameter = radius*2;
 	
-	
-
 	RECT rec;
-	rec.left = x-radius-1;
-	rec.top = y-radius-1;
+	rec.left = prevX_-radius-1;
+	rec.top = prevY_-radius-1;
 	rec.right = rec.left + diameter+10;
 	rec.bottom = rec.top + diameter+10;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
 
 	Timer timer;
 
-	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
-//	Graphics::DrawFilledCircle(x, y, diameter, 0x00FF00);
+	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x00FF00);
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
 
@@ -139,7 +145,7 @@ void OnTime(HWND hWnd)
 	rec.bottom = 100;
 	::InvalidateRect(hWnd, &rec, FALSE);
 
-	x += 0.01;
-	y += 0.01;
-	radius += 0.01;
+//	x += 0.1;
+//	y += 0.1;
+//	radius -= 0.01;
 }

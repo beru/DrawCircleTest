@@ -5,10 +5,24 @@
 
 namespace Graphics {
 
+struct Rect
+{
+	int16_t x;
+	int16_t y;
+	uint16_t w;
+	uint16_t h;
+};
+
 extern pixel_t* buff_;
 extern uint16_t width_;
 extern uint16_t height_;
 extern int32_t stride_;
+
+extern Rect clippingRect_;
+
+bool RectIntersect(const Rect& a, const Rect& b, Rect& c);
+
+bool RectContains(const Rect& r, int16_t x, int16_t y);
 
 static inline
 int getLineOffset()
@@ -25,34 +39,12 @@ pixel_t* getPixelPtr(uint16_t x, uint16_t y)
 }
 
 static inline
-pixel_t to_pixel_t(uint32_t color)
-{
-#if 0
-#if 1
-	return color & 0xFF;
-#else
-	uint16_t c = 0;
-	c |= (color & 0xFF) >> 3;
-	c |= ((color & 0xFF00) >> 10) << 5;
-	c |= ((color & 0xFF0000) >> 19) << 11;
-	return c;
-#endif
-#else
-	return color;
-#endif
-}
-
-static inline
 void putPixel(uint16_t x, uint16_t y, pixel_t color)
 {
-	*getPixelPtr(x, y) = color;
+	if (RectContains(clippingRect_, x, y)) {
+		*getPixelPtr(x, y) = color;
+	}
 }
-
-//static inline
-//void putPixel(uint16_t x, uint16_t y, uint8_t color)
-//{
-//	*getPixelPtr(x, y) = to_pixel_t(color);
-//}
 
 template <typename T>
 static inline

@@ -34,7 +34,6 @@ void DrawRectangle(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color, 
 void DrawCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircleAA(float cx, float cy, float diameter, pixel_t color);
-void DrawFilledCircleAA2(float cx, float cy, float diameter, pixel_t color);
 
 struct Vertex
 {

@@ -1,6 +1,6 @@
 #include "graphics_impl_common.h"
 
-#include "sse2.h"
+#include <algorithm>
 
 namespace Graphics {
 
@@ -8,14 +8,6 @@ pixel_t* buff_;
 uint16_t width_;
 uint16_t height_;
 int32_t stride_;
-
-struct Rect
-{
-	int16_t x;
-	int16_t y;
-	uint16_t w;
-	uint16_t h;
-};
 
 Rect clippingRect_;
 
@@ -57,20 +49,24 @@ void FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, pixel_t color)
 
 void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y, pixel_t color)
 {
+	if (y < clippingRect_.y || y >= clippingRect_.y+clippingRect_.h) {
+		return;
+	}
 	if (x1 > x2) {
 		uint16_t tmp = x1;
 		x1 = x2;
 		x2 = tmp;
 	}
+	x1 = std::max<int16_t>(x1, clippingRect_.x);
+	x1 = std::min<int16_t>(x1, clippingRect_.x+clippingRect_.w);
+	x2 = std::max<int16_t>(x2, clippingRect_.x);
+	x2 = std::min<int16_t>(x2, clippingRect_.x+clippingRect_.w);
+	
 	pixel_t* ptr = getPixelPtr(x1, y);
-#if 0
-	memset_32(ptr, color, x2-x1);
-#else
 	for (uint32_t x=x1; x<x2; ++x) {
 		*ptr = color;
 		++ptr;
 	}
-#endif
 }
 
 void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color)
@@ -81,9 +77,8 @@ void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color)
 		y2 = tmp;
 	}
 	pixel_t* ptr = getPixelPtr(x, y1);
-	pixel_t sc = to_pixel_t(color);
 	for (int y=y1; y<y2; ++y) {
-		*ptr = sc;
+		*ptr = color;
 		OffsetPtr(ptr, getLineOffset());
 	}
 }
@@ -104,12 +99,11 @@ void DrawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, pixel_t color)
 		int dx2 = dx * 2;
 		int dy2 = dy * 2;
 		int E;
-		pixel_t sc = to_pixel_t(color);
 		// ŒX‚«‚ª1ˆÈ‰º‚Ìê‡
 		if (dy <= dx) {
 			E = -dx;
 			for (size_t i=0; i<=dx; ++i) {
-				*ptr = sc;
+				*ptr = color;
 				ptr += sx;
 				E += dy2;
 				if (0 <= E) {
@@ -121,7 +115,7 @@ void DrawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, pixel_t color)
 		}else {
 			E = -dy;
 			for (size_t i=0; i<=dy; ++i) {
-				*ptr = sc;
+				*ptr = color;
 				OffsetPtr(ptr, sy);
 				E += dx2;
 				if (0 <= E) {
