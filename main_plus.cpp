@@ -10,6 +10,8 @@
 #include "arrayutil.h"
 
 #include "graphics/graphics.h"
+#include <tchar.h>
+#include <stdio.h>
 
 namespace {
 
@@ -104,16 +106,34 @@ void OnTime(HWND hWnd)
 	}
 	static float x = 601.5;
 	static float y = 300.0;
-	static float radius = 100;
+	static float radius = 300;
 	float diameter = radius*2;
 	
+	
+
 	RECT rec;
 	rec.left = x-radius-1;
 	rec.top = y-radius-1;
 	rec.right = rec.left + diameter+10;
 	rec.bottom = rec.top + diameter+10;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
+
+	DWORD st = ::timeGetTime();
+
 	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
+
+	DWORD et = ::timeGetTime();
+
+	::InvalidateRect(hWnd, &rec, FALSE);
+
+	TCHAR str[32];
+	_stprintf(str, _T("%d"), et-st);
+	::SetTextColor(hMemDC, -1);
+	::TextOut(hMemDC, 10, 10, str, _tcslen(str));
+	rec.left = 10;
+	rec.top = 10;
+	rec.right = 100;
+	rec.bottom = 100;
 	::InvalidateRect(hWnd, &rec, FALSE);
 
 	x += 0.01;

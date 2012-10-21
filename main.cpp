@@ -51,6 +51,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRAWCIRCLETEST));
 	
+	::timeBeginPeriod(1);
+
 	static const size_t MS_PER_FRAME = 20;
 	DWORD lastTime = ::timeGetTime() + MS_PER_FRAME;
 	
@@ -75,6 +77,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			lastTime += MS_PER_FRAME;
 		}
 	}
+
+	::timeEndPeriod(1);
 	
 	return (int) msg.wParam;
 }
