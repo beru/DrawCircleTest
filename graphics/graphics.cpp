@@ -9,12 +9,40 @@ uint16_t width_;
 uint16_t height_;
 int32_t stride_;
 
+struct Rect
+{
+	int16_t x;
+	int16_t y;
+	uint16_t w;
+	uint16_t h;
+};
+
+Rect clippingRect_;
+
 void SetCanvas(void* buff, uint16_t width, uint16_t height, int32_t stride)
 {
 	buff_ = (pixel_t*) buff;
 	width_ = width;
 	height_ = height;
 	stride_ = stride;
+
+	SetClippingRect(0,0,width,height);
+}
+
+void SetClippingRect(int16_t x, int16_t y, uint16_t w, uint16_t h)
+{
+	clippingRect_.x = x;
+	clippingRect_.y = y;
+	clippingRect_.w = w;
+	clippingRect_.h = h;
+	if (clippingRect_.x < 0) {
+		clippingRect_.w += clippingRect_.x;
+		clippingRect_.x = 0;
+	}
+	if (clippingRect_.h < 0) {
+		clippingRect_.h += clippingRect_.y;
+		clippingRect_.y = 0;
+	}
 }
 
 void PutPixel(uint16_t x, uint16_t y, pixel_t color)

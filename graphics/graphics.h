@@ -3,17 +3,11 @@
 
 namespace Graphics {
 
-struct ClippingRect
-{
-	int16_t x;
-	int16_t y;
-	uint16_t w;
-	uint16_t h;
-};
-
 typedef uint32_t pixel_t;
 
 void SetCanvas(void* buff, uint16_t width, uint16_t height, int32_t stride);
+
+void SetClippingRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
 
 static inline
 pixel_t MakePixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
@@ -41,25 +35,6 @@ void DrawCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircleAA(float cx, float cy, float diameter, pixel_t color);
 void DrawFilledCircleAA2(float cx, float cy, float diameter, pixel_t color);
-
-void DrawLinearGradient(int16_t x1, int16_t y1, pixel_t v1,
-						int16_t x2, int16_t y2, pixel_t v2,
-						const ClippingRect& clippingRect,
-						bool dithering);
-
-void DrawRadialGradient(
-	float cx, float cy, float diameter,
-	const ClippingRect& clippingRect,
-	const uint16_t* distanceTable, uint8_t distanceTableShifts,
-	const pixel_t* colorTable,
-	bool dithering);
-
-void DrawCircleGradient(
-	float cx, float cy, float diameter1, float diameter2,
-	const ClippingRect& clippingRect,
-	const uint16_t* distanceTable, uint8_t distanceTableShifts,
-	const pixel_t* colorTable,
-	bool dithering);
 
 struct Vertex
 {

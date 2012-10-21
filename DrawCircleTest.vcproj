@@ -302,10 +302,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\graphics\graphics_DrawRadialGradient.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\graphics\graphics_DrawRectangle.cpp"
 				>
 			</File>

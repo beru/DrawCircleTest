@@ -158,7 +158,7 @@ void drawHalf(
 		ty += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
 		drawLine(py,cx,color,seg,prevSeg,0);
-		prevSeg= seg;
+		prevSeg = seg;
 	}
 }
 
