@@ -13,6 +13,8 @@
 #include <tchar.h>
 #include <stdio.h>
 
+#include "timer.h"
+
 namespace {
 
 HWND hWnd;
@@ -118,16 +120,17 @@ void OnTime(HWND hWnd)
 	rec.bottom = rec.top + diameter+10;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
 
-	DWORD st = ::timeGetTime();
+	Timer timer;
 
 	Graphics::DrawFilledCircleAA2(x, y, diameter, 0x00FF00);
-
-	DWORD et = ::timeGetTime();
+//	Graphics::DrawFilledCircle(x, y, diameter, 0x00FF00);
+	
+	double elapsed = timer.ElapsedSecond() * 1000;
 
 	::InvalidateRect(hWnd, &rec, FALSE);
 
 	TCHAR str[32];
-	_stprintf(str, _T("%d"), et-st);
+	_stprintf(str, _T("%f"), elapsed);
 	::SetTextColor(hMemDC, -1);
 	::TextOut(hMemDC, 10, 10, str, _tcslen(str));
 	rec.left = 10;
