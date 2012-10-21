@@ -1,5 +1,7 @@
 #include "graphics_impl_common.h"
 
+#include "sse2.h"
+
 namespace Graphics {
 
 pixel_t* buff_;
@@ -33,11 +35,14 @@ void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y, pixel_t color)
 		x2 = tmp;
 	}
 	pixel_t* ptr = getPixelPtr(x1, y);
-	pixel_t sc = to_pixel_t(color);
+#if 0
+	memset_32(ptr, color, x2-x1);
+#else
 	for (uint32_t x=x1; x<x2; ++x) {
-		*ptr = sc;
+		*ptr = color;
 		++ptr;
 	}
+#endif
 }
 
 void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color)

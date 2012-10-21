@@ -291,6 +291,7 @@ void DrawFilledCircleAA2(float cx, float cy, float diameter, pixel_t color)
 		inited = true;
 		initTable(TABLE_RADIUS);
 	}
+	
 	float radius = diameter / 2.0;
 	// ‰º‘¤
 	drawHalf(cx, cy, radius, color, 1.0);
