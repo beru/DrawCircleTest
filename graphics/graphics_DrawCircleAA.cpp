@@ -131,7 +131,13 @@ CircleSegment lerpCircleSegment(float pos, float radius, float rr)
 	ret.area = (seg0.area + diff.area * fraction) * rr;
 	return ret;
 }
-	
+
+static inline
+float distFloor(float v)
+{
+	return v - floor(v);
+}
+
 void drawHalf(
 	float cx,
 	float cy,
@@ -144,10 +150,10 @@ void drawHalf(
 	float ratioRadius = TABLE_RADIUS / radius;
 	
 	int16_t py = cy;
-	float fracy = frac(cy);
+	float distcy = distFloor(cy);
 	float ty = 0;
-	if (fracy) {
-		ty += direction * (1.0-fracy) * ratioRadius;
+	if (distcy) {
+		ty += direction * (1.0-distcy) * ratioRadius;
 	}
 	size_t i = 1;
 	if (ty < 0) {
@@ -205,9 +211,9 @@ void drawLine2(
 	// 上側
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
 	if (iyMinus != (int)floor(prevYMinus)) {
-		float leftArea = prescaledCurvedPart * (1.0f - (prevYMinus-floor(prevYMinus)));
+		float leftArea = prescaledCurvedPart * (1.0f - distFloor(prevYMinus));
 //		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-		float rightRectArea = 1.0f - (yMinus-floor(yMinus));	// 右側のピクセルの矩形部分だけ
+		float rightRectArea = 1.0f - distFloor(yMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 		setPixel(x, iyMinus+yOffset1-1, leftArea*255.0f);
 		setPixel(x, iyMinus+yOffset1, rightArea*255.0f);
@@ -222,8 +228,8 @@ void drawLine2(
 #if 1
 	// 下側
 	if (iyPlus != (int)prevYPlus) {
-		float rightArea = prescaledCurvedPart * (prevYPlus-floor(prevYPlus));
-		float leftRectArea = (yPlus-floor(yPlus));
+		float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
+		float leftRectArea = distFloor(yPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
 		setPixel(x2, iyPlus+yOffset2, leftArea*255.0f);
 		setPixel(x2, iyPlus+yOffset2+1, rightArea*255.0f);
@@ -245,12 +251,12 @@ void drawHalf2(
 	float rr = radius * radius;
 	float ratioRadius = TABLE_RADIUS / radius;
 	
-	float fraccx = frac(cx);
+	float distcx = distFloor(cx);
 	float tx = 0;
 	float tx2 = 0;
-	if (fraccx) {
-		tx += fraccx * ratioRadius;
-		tx2 -= fraccx * ratioRadius;
+	if (distcx) {
+		tx += distcx * ratioRadius;
+		tx2 -= distcx * ratioRadius;
 	}
 	size_t i = 1;
 	size_t cnt = radius*xylen45deg;
