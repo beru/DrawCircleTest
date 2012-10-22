@@ -289,7 +289,7 @@ void drawHalf2(
 			drawLine2(cx+i-1,cx+i-1,0,cx,cy,color, seg2,prevSeg2,ylimits);
 		}
 	}
-	for (; i<cnt+2; ++i) {
+	for (; i<cnt+3; ++i) {
 		tx += ratioRadius;
 		CircleSegment seg = lerpCircleSegment(tx, radius, rr);
 		tx2 += ratioRadius;

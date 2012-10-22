@@ -1,6 +1,7 @@
 #include "graphics_impl_common.h"
 
 #include <algorithm>
+#include "sse2.h"
 
 namespace Graphics {
 
@@ -144,10 +145,14 @@ void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y, pixel_t color)
 	x2 = std::min<int16_t>(x2, clippingRect_.x+clippingRect_.w);
 	
 	pixel_t* ptr = GetPixelPtr(x1, y);
+#if 0
+	memset_32(ptr, color, x2-x1);
+#else
 	for (uint32_t x=x1; x<x2; ++x) {
 		PutPixel_Unsafe(ptr, color);
 		++ptr;
 	}
+#endif
 }
 
 void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color)

@@ -51,32 +51,25 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRAWCIRCLETEST));
 	
-	::timeBeginPeriod(1);
-
 	static const DWORD MS_PER_FRAME = 20;
 	DWORD lastTime = ::timeGetTime() + MS_PER_FRAME;
 	
 	// メイン メッセージ ループ:
 	while (1) {
-		BOOL ret = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-		if (ret) {
-			if (msg.message == WM_QUIT) {
-				break;
+        BOOL ret = ::GetMessage(&msg, NULL, 0, 0);
+		if (ret == 0/*WM_QUIT*/ || ret == -1/*ERROR*/) {
+			if (ret == -1) {
+				DWORD err = ::GetLastError();
+				assert(false);
 			}
-			if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
+            break;
 		}
-		DWORD now = ::timeGetTime();
-		if (now - lastTime >= MS_PER_FRAME) {
-			OnTime(msg.hwnd);
-			lastTime += MS_PER_FRAME;
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
 	}
-
-	::timeEndPeriod(1);
 	
 	return (int) msg.wParam;
 }
@@ -219,6 +212,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //		if (::GetCapture() == hWnd) {
 			OnMouseMove(hWnd, wParam, lParam);
 //		}
+		break;
+	case WM_TIMER:
+		OnTimer(hWnd, wParam, lParam);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

@@ -11,8 +11,7 @@ void memset_32(
 	)
 {
 	assert(!((uint32_t)dest & 3));
-
-#if 1
+#if 0
 	// •Ï‚ÉÅ“K‰»‚·‚é‚æ‚è‚±‚Á‚¿‚Ì•û‚ª‘¬‚¢B
 	uint32_t* pInts = (uint32_t*) dest;
 	for (size_t i=0; i<count; ++i) {
@@ -33,7 +32,7 @@ void memset_32(
 	__m128i vec = _mm_set1_epi32(value);
 	__m128i* pVec = (__m128i*)pInts;
 	for (size_t i=0; i<n16bytes; ++i) {
-		_mm_stream_si128(pVec++, vec);
+		_mm_store_si128(pVec++, vec);
 	}
 	pInts = (uint32_t*)pVec;
 	size_t nRemain = count % 4;
