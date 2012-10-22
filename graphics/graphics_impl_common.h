@@ -39,7 +39,7 @@ pixel_t* getPixelPtr(uint16_t x, uint16_t y)
 }
 
 static inline
-void putPixel(uint16_t x, uint16_t y, pixel_t color)
+void putPixel(int16_t x, int16_t y, pixel_t color)
 {
 	if (RectContains(clippingRect_, x, y)) {
 		*getPixelPtr(x, y) = color;

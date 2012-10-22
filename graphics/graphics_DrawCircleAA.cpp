@@ -55,7 +55,7 @@ void initTable(int tableRadius)
 }
 
 static inline
-void setPixel(uint16_t x, uint16_t y, float alpha)
+void setPixel(int16_t x, int16_t y, float alpha)
 {
 	uint8_t a = alpha;
 	Graphics::putPixel(x, y, Graphics::MakePixel(0,a,0,0));
@@ -76,8 +76,8 @@ void drawLine(
 {
 	float xMinus = cx - seg.length;
 	float xPlus = cx + seg.length;
-	int16_t ixMinus = (int16_t) xMinus;
-	int16_t ixPlus = (int16_t) xPlus;
+	int16_t ixMinus = floor(xMinus);
+	int16_t ixPlus = floor(xPlus);
 	
 	float prevXMinus = cx - prevSeg.length;
 	float prevXPlus = cx + prevSeg.length;
@@ -90,9 +90,9 @@ void drawLine(
 	// X座標の整数値が異なる場合は横2pixelに跨る。
 	// 左側 180°～225°
 	if (ixMinus != (int)prevXMinus) {
-		float leftArea = prescaledCurvedPart * (1.0f - frac(prevXMinus));
+		float leftArea = prescaledCurvedPart * (1.0f - (prevXMinus-floor(prevXMinus)));
 //		float leftArea2 = curvedPart * (ceil(prevXMinus)-prevXMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-		float rightRectArea = 1.0f - frac(xMinus);	// 右側のピクセルの矩形部分だけ
+		float rightRectArea = 1.0f - (xMinus-floor(xMinus));	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 		setPixel(ixMinus-1, py, leftArea*255.0f);
 		setPixel(ixMinus, py, rightArea*255.0f);
@@ -105,8 +105,8 @@ void drawLine(
 	DrawHorizontalLine(ixMinus+1, ixPlus, py, color);
 	// 右側 0°～ -45°
 	if (ixPlus != (int)prevXPlus) {
-		float rightArea = prescaledCurvedPart * frac(prevXPlus);
-		float leftRectArea = frac(xPlus);
+		float rightArea = prescaledCurvedPart * (prevXPlus-floor(prevXPlus));
+		float leftRectArea = (xPlus-floor(xPlus));
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
 		setPixel(ixPlus, py, leftArea*255.0f);
 		setPixel(ixPlus+1, py, rightArea*255.0f);
@@ -189,8 +189,8 @@ void drawLine2(
 	float yPlus = cy + seg.length;
 	float prevYPlus = cy + prevSeg.length;
 	
-	int iyMinus = (int)yMinus;
-	int iyPlus = (int)yPlus;
+	int iyMinus = floor(yMinus);
+	int iyPlus = floor(yPlus);
 	int yOffset1 = 1;
 	int yOffset2 = 0;
 	if (frac(cx)) {
@@ -202,12 +202,12 @@ void drawLine2(
 	}
 
 #if 1
-	// Y座標の整数値が異なる場合は縦2pixelに跨る。
 	// 上側
-	if (iyMinus != (int)prevYMinus) {
-		float leftArea = prescaledCurvedPart * (1.0f - frac(prevYMinus));
+	// Y座標の整数値が異なる場合は縦2pixelに跨る。
+	if (iyMinus != (int)floor(prevYMinus)) {
+		float leftArea = prescaledCurvedPart * (1.0f - (prevYMinus-floor(prevYMinus)));
 //		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-		float rightRectArea = 1.0f - frac(yMinus);	// 右側のピクセルの矩形部分だけ
+		float rightRectArea = 1.0f - (yMinus-floor(yMinus));	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 		setPixel(x, iyMinus+yOffset1-1, leftArea*255.0f);
 		setPixel(x, iyMinus+yOffset1, rightArea*255.0f);
@@ -222,8 +222,8 @@ void drawLine2(
 #if 1
 	// 下側
 	if (iyPlus != (int)prevYPlus) {
-		float rightArea = prescaledCurvedPart * frac(prevYPlus);
-		float leftRectArea = frac(yPlus);
+		float rightArea = prescaledCurvedPart * (prevYPlus-floor(prevYPlus));
+		float leftRectArea = (yPlus-floor(yPlus));
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
 		setPixel(x2, iyPlus+yOffset2, leftArea*255.0f);
 		setPixel(x2, iyPlus+yOffset2+1, rightArea*255.0f);

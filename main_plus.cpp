@@ -117,14 +117,14 @@ void OnTime(HWND hWnd)
 	if (!IsWindow(hWnd)) {
 		return;
 	}
-	static float radius = 300;
+	static float radius = 400;
 	float diameter = radius*2;
 	
 	RECT rec;
-	rec.left = prevX_-radius-1;
-	rec.top = prevY_-radius-1;
-	rec.right = rec.left + diameter+10;
-	rec.bottom = rec.top + diameter+10;
+	rec.left = prevX_-radius-5;
+	rec.top = prevY_-radius-5;
+	rec.right = rec.left + diameter+5;
+	rec.bottom = rec.top + diameter+5;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0);
 
 	Timer timer;
@@ -133,6 +133,10 @@ void OnTime(HWND hWnd)
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
 
+	rec.left = x_-radius-1;
+	rec.top = y_-radius-1;
+	rec.right = rec.left + diameter+5;
+	rec.bottom = rec.top + diameter+5;
 	::InvalidateRect(hWnd, &rec, FALSE);
 
 	TCHAR str[32];
