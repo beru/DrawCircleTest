@@ -53,23 +53,21 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	::timeBeginPeriod(1);
 
-	static const size_t MS_PER_FRAME = 20;
+	static const DWORD MS_PER_FRAME = 20;
 	DWORD lastTime = ::timeGetTime() + MS_PER_FRAME;
 	
 	// メイン メッセージ ループ:
 	while (1) {
-		BOOL ret = GetMessage(&msg, NULL, 0, 0);
-		if (ret == 0 || ret == -1) {
-			if (ret == -1) {
-				DWORD err = ::GetLastError();
-				assert(false);
+		BOOL ret = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+		if (ret) {
+			if (msg.message == WM_QUIT) {
+				break;
 			}
-			break;
-		}
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 		DWORD now = ::timeGetTime();
 		if (now - lastTime >= MS_PER_FRAME) {

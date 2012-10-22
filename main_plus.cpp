@@ -98,7 +98,7 @@ void OnMouseUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static float x_ = 301.5;
 static float y_ = 810.0;
-static float radius_ = 300;
+static float radius_ = 10;
 static float prevX_ = x_;
 static float prevY_ = y_;
 static float prevRadius_ = radius_;
@@ -126,19 +126,19 @@ void OnTime(HWND hWnd)
 	rec.right = prevX_+prevRadius_+5;
 	rec.bottom = prevY_+prevRadius_+5;
 	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0xFF000000);
-
+	
 	Timer timer;
 	float diameter = radius_*2;
 	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x8F2F441F);
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
-
+	
 	rec.left = x_-radius_-5;
 	rec.top = y_-radius_-5;
 	rec.right = x_ + radius_+5;
 	rec.bottom = y_ + radius_+5;
 	::InvalidateRect(hWnd, &rec, FALSE);
-
+	
 	TCHAR str[32];
 	_stprintf(str, _T("%f"), elapsed);
 	::SetTextColor(hMemDC, -1);
@@ -148,12 +148,13 @@ void OnTime(HWND hWnd)
 	rec.right = 100;
 	rec.bottom = 100;
 	::InvalidateRect(hWnd, &rec, FALSE);
-
+	
 	prevX_ = x_;
 	prevY_ = y_;
 	prevRadius_ = radius_;
 	
-	x_ += 0.01;
-	y_ -= 0.01;
-//	radius_ -= 0.01;
+	x_ += 0.1;
+	y_ -= 0.1;
+	radius_ += 0.1;
 }
+
