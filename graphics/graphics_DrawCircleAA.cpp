@@ -54,16 +54,15 @@ void initTable(int tableRadius)
 	}
 }
 
-static inline
-void setPixel(int16_t x, int16_t y, float alpha)
-{
-	uint8_t a = alpha;
-	Graphics::putPixel(x, y, Graphics::MakePixel(0,a,0,0));
-}
-
 namespace Graphics {
 
 static const int TABLE_RADIUS = 512;
+
+static inline
+void setPixel(int16_t x, int16_t y, pixel_t color, float alpha)
+{
+	PutPixel(x, y, AdjustAlpha(color, alpha));
+}
 
 void drawLine(
 	int16_t py,
@@ -94,12 +93,12 @@ void drawLine(
 //		float leftArea2 = curvedPart * (ceil(prevXMinus)-prevXMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 		float rightRectArea = 1.0f - (xMinus-floor(xMinus));	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-		setPixel(ixMinus-1, py, leftArea*255.0f);
-		setPixel(ixMinus, py, rightArea*255.0f);
+		setPixel(ixMinus-1, py, color, leftArea);
+		setPixel(ixMinus, py, color, rightArea);
 	}else {
 //		float remain = areaDiff - (cx - (int)(xMinus+1.0f));
 		float remain = curvedPart + ceil(xMinus) - xMinus;
-		setPixel(ixMinus, py, remain*255.0f);
+		setPixel(ixMinus, py, color, remain);
 	}
 	// 中間線
 	DrawHorizontalLine(ixMinus+1, ixPlus, py, color);
@@ -108,11 +107,11 @@ void drawLine(
 		float rightArea = prescaledCurvedPart * (prevXPlus-floor(prevXPlus));
 		float leftRectArea = (xPlus-floor(xPlus));
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(ixPlus, py, leftArea*255.0f);
-		setPixel(ixPlus+1, py, rightArea*255.0f);
+		setPixel(ixPlus, py, color, leftArea);
+		setPixel(ixPlus+1, py, color, rightArea);
 	}else {
 		float remain = areaDiff - (ixPlus - cx);
-		setPixel(ixPlus, py, remain*255.0f);
+		setPixel(ixPlus, py, color, remain);
 	}
 }
 
@@ -215,13 +214,13 @@ void drawLine2(
 //		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 		float rightRectArea = 1.0f - distFloor(yMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-		setPixel(x, iyMinus+yOffset1-1, leftArea*255.0f);
-		setPixel(x, iyMinus+yOffset1, rightArea*255.0f);
+		setPixel(x, iyMinus+yOffset1-1, color, leftArea);
+		setPixel(x, iyMinus+yOffset1, color, rightArea);
 		DrawHorizontalLine(x+xoffset, cx, iyMinus+yOffset1, color);
 	}else {
 //		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 		float remain = curvedPart + ceil(yMinus) - yMinus;
-		setPixel(x, iyMinus+yOffset1, remain*255.0f);
+		setPixel(x, iyMinus+yOffset1, color, remain);
 	}
 #endif
 	
@@ -231,12 +230,12 @@ void drawLine2(
 		float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
 		float leftRectArea = distFloor(yPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(x2, iyPlus+yOffset2, leftArea*255.0f);
-		setPixel(x2, iyPlus+yOffset2+1, rightArea*255.0f);
+		setPixel(x2, iyPlus+yOffset2, color, leftArea);
+		setPixel(x2, iyPlus+yOffset2+1, color, rightArea);
 		DrawHorizontalLine(cx, x2+xoffset, iyPlus+yOffset2, color);
 	}else {
 		float remain = areaDiff - (iyPlus - cy);
-		setPixel(x2, iyPlus+yOffset2, remain*255.0f);
+		setPixel(x2, iyPlus+yOffset2, color, remain);
 	}
 #endif
 }

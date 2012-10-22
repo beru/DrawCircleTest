@@ -25,7 +25,7 @@ void DrawTriangle1(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	int miny = (int)min(y1, y2, y3);
 	int maxy = (int)max(y1, y2, y3);
 	
-	pixel_t* colorBuffer = getPixelPtr(0, miny);
+	pixel_t* colorBuffer = GetPixelPtr(0, miny);
 	
 	// Scan through bounding rectangle
 	for (int y=miny; y<maxy; y++) {
@@ -40,7 +40,7 @@ void DrawTriangle1(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 				colorBuffer[x] = 0x00FFFFFF; // White
 			}
 		}
-		OffsetPtr(colorBuffer, getLineOffset());
+		OffsetPtr(colorBuffer, GetLineOffset());
 	}
 }
 
@@ -70,7 +70,7 @@ void DrawTriangle2(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	int miny = (int)min(y1, y2, y3);
 	int maxy = (int)max(y1, y2, y3);
 
-	pixel_t* colorBuffer = getPixelPtr(0, miny);
+	pixel_t* colorBuffer = GetPixelPtr(0, miny);
 
 	// Constant part of half-edge functions
 	float C1 = Dy12 * x1 - Dx12 * y1;
@@ -98,7 +98,7 @@ void DrawTriangle2(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 		Cy1 += Dx12;
 		Cy2 += Dx23;
 		Cy3 += Dx31;
-		OffsetPtr(colorBuffer, getLineOffset());
+		OffsetPtr(colorBuffer, GetLineOffset());
 	}
 	
 }
@@ -151,7 +151,7 @@ void DrawTriangle3(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	int miny = (min(Y1, Y2, Y3) + 0xF) >> 4;
 	int maxy = (max(Y1, Y2, Y3) + 0xF) >> 4;
 
-	pixel_t* colorBuffer = getPixelPtr(0, miny);
+	pixel_t* colorBuffer = GetPixelPtr(0, miny);
 
 	// Half-edge constants
 	int C1 = DY12 * X1 - DX12 * Y1;
@@ -182,7 +182,7 @@ void DrawTriangle3(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 		CY1 += FDX12;
 		CY2 += FDX23;
 		CY3 += FDX31;
-		OffsetPtr(colorBuffer, getLineOffset());
+		OffsetPtr(colorBuffer, GetLineOffset());
 	}
 	
 }
@@ -220,7 +220,7 @@ void DrawTriangle4(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	// Start in corner of 8x8 block
 	minx &= ~(q - 1);
 	miny &= ~(q - 1);
-	pixel_t* colorBuffer = getPixelPtr(0, miny);
+	pixel_t* colorBuffer = GetPixelPtr(0, miny);
 	// Half-edge constants
 	int C1 = DY12 * X1 - DX12 * Y1;
 	int C2 = DY23 * X2 - DX23 * Y2;
@@ -262,7 +262,7 @@ void DrawTriangle4(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 					for (int ix = x; ix < x + q; ix++) {
 						buffer[ix] = 0x00007F00; // Green
 					}
-					OffsetPtr(buffer, getLineOffset());
+					OffsetPtr(buffer, GetLineOffset());
 				}
 			}else {// Partially covered block
 				int CY1 = C1 + DX12 * y0 - DY12 * x0;
@@ -283,11 +283,11 @@ void DrawTriangle4(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 					CY1 += FDX12;
 					CY2 += FDX23;
 					CY3 += FDX31;
-					OffsetPtr(buffer, getLineOffset());
+					OffsetPtr(buffer, GetLineOffset());
 				}
 			}
 		}
-		OffsetPtr(colorBuffer, q*getLineOffset());
+		OffsetPtr(colorBuffer, q*GetLineOffset());
 	}
 }
 
@@ -342,7 +342,7 @@ void DrawTriangle5(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	minx &= ~(q - 1); // This and later is all in 64-bit x86 ASM without SSE
 	miny &= ~(q - 1);
 
-	pixel_t* colorBuffer = getPixelPtr(0, miny);
+	pixel_t* colorBuffer = GetPixelPtr(0, miny);
 	// Half-edge constants
 	int C1 = DY12 * X1 - DX12 * Y1; // SSE only has instructions for WORDs
 	int C2 = DY23 * X2 - DX23 * Y2; // but this needs at least DWORDs and
@@ -429,7 +429,7 @@ void DrawTriangle5(const Vertex& v1, const Vertex& v2, const Vertex& v3)
   it at all so I left it out :)
 */
 					}
-					OffsetPtr(buffer, getLineOffset());
+					OffsetPtr(buffer, GetLineOffset());
 				}
 			}
 			else // Partially covered block
@@ -459,11 +459,11 @@ void DrawTriangle5(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 					CY1 += FDX12;
 					CY2 += FDX23;
 					CY3 += FDX31;
-					OffsetPtr(buffer, getLineOffset());
+					OffsetPtr(buffer, GetLineOffset());
 				}
 			}
 		}
-		OffsetPtr(colorBuffer, q * getLineOffset());
+		OffsetPtr(colorBuffer, q * GetLineOffset());
 	}
 
 }

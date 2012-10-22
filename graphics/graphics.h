@@ -9,14 +9,14 @@ void SetCanvas(void* buff, uint16_t width, uint16_t height, int32_t stride);
 
 void SetClippingRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
 
-static inline
-pixel_t MakePixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-{
-	return (a<<24) | (b<<16) | (g<<8) | r;
-}
+pixel_t MakePixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-void PutPixel(uint16_t x, uint16_t y, pixel_t color);
-void FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, pixel_t color);
+pixel_t ReplaceAlpha(pixel_t color, uint8_t a);
+pixel_t AdjustAlpha(pixel_t color, float v);
+pixel_t BlendColor(pixel_t foreColor, pixel_t backColor);
+
+void PutPixel(int16_t x, int16_t y, pixel_t color);
+void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color);
 
 void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y2, pixel_t color);
 void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color);

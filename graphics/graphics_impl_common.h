@@ -5,6 +5,16 @@
 
 namespace Graphics {
 
+static const pixel_t AMASK = 0xFF000000;
+static const pixel_t RMASK = 0x00FF0000;
+static const pixel_t GMASK = 0x0000FF00;
+static const pixel_t BMASK = 0x000000FF;
+
+static const size_t ASHIFT = 24;
+static const size_t RSHIFT = 16;
+static const size_t GSHIFT = 8;
+static const size_t BSHIFT = 0;
+
 struct Rect
 {
 	int16_t x;
@@ -25,25 +35,17 @@ bool RectIntersect(const Rect& a, const Rect& b, Rect& c);
 bool RectContains(const Rect& r, int16_t x, int16_t y);
 
 static inline
-int getLineOffset()
+int GetLineOffset()
 {
 	return stride_;
 }
 
 static inline
-pixel_t* getPixelPtr(uint16_t x, uint16_t y)
+pixel_t* GetPixelPtr(uint16_t x, uint16_t y)
 {
 	pixel_t* ptr = buff_ + x;
 	OffsetPtr(ptr, y*stride_);
 	return ptr;
-}
-
-static inline
-void putPixel(int16_t x, int16_t y, pixel_t color)
-{
-	if (RectContains(clippingRect_, x, y)) {
-		*getPixelPtr(x, y) = color;
-	}
 }
 
 template <typename T>
@@ -132,8 +134,6 @@ float InvSqrt(float x)
 	x = x*(1.5f-xhalf*x*x); // Newton step, repeating increases accuracy
 	return x;
 }
-
-void fillSolidRectangle(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color);
 
 }
 

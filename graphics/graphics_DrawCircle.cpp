@@ -15,14 +15,14 @@ void drawCircle1 (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 	while (yy < xx) {
 		x = xx >> SHIFT;
 		y = yy >> SHIFT;
-		putPixel(cx+x, cy+y, color);
-		putPixel(cx-x, cy-y, color);
-		putPixel(cx-x, cy+y, color);
-		putPixel(cx+x, cy-y, color);
-		putPixel(cx+y, cy+x, color);
-		putPixel(cx-y, cy-x, color);
-		putPixel(cx-y, cy+x, color);
-		putPixel(cx+y, cy-x, color);
+		PutPixel(cx+x, cy+y, color);
+		PutPixel(cx-x, cy-y, color);
+		PutPixel(cx-x, cy+y, color);
+		PutPixel(cx+x, cy-y, color);
+		PutPixel(cx+y, cy+x, color);
+		PutPixel(cx-y, cy-x, color);
+		PutPixel(cx-y, cy+x, color);
+		PutPixel(cx+y, cy-x, color);
 		yy += xx >> SHIFT;
 		xx -= yy >> SHIFT;
 	}
@@ -36,14 +36,14 @@ void drawCircle2 (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 	int y = 0;
 	int F = -diameter + 3;
 	while (x >= y) {
-		putPixel(cx - x, cy + y, color);
-		putPixel(cx + x, cy + y, color);
-		putPixel(cx - x, cy - y, color);
-		putPixel(cx + x, cy - y, color);
-		putPixel(cx - y, cy + x, color);
-		putPixel(cx + y, cy + x, color);
-		putPixel(cx - y, cy - x, color);
-		putPixel(cx + y, cy - x, color);
+		PutPixel(cx - x, cy + y, color);
+		PutPixel(cx + x, cy + y, color);
+		PutPixel(cx - x, cy - y, color);
+		PutPixel(cx + x, cy - y, color);
+		PutPixel(cx - y, cy + x, color);
+		PutPixel(cx + y, cy + x, color);
+		PutPixel(cx - y, cy - x, color);
+		PutPixel(cx + y, cy - x, color);
 		if (F >= 0) {
 			x--;
 			F -= 4 * x;
@@ -61,14 +61,14 @@ void drawCircle3 (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 	int y = 0;
 	int f = -2 * r + 2;
 	while (x > y) {
-		putPixel(cx - x, cy + y, color);
-		putPixel(cx + x, cy + y, color);
-		putPixel(cx - x, cy - y, color);
-		putPixel(cx + x, cy - y, color);
-		putPixel(cx - y, cy + x, color);
-		putPixel(cx + y, cy + x, color);
-		putPixel(cx - y, cy - x, color);
-		putPixel(cx + y, cy - x, color);
+		PutPixel(cx - x, cy + y, color);
+		PutPixel(cx + x, cy + y, color);
+		PutPixel(cx - x, cy - y, color);
+		PutPixel(cx + x, cy - y, color);
+		PutPixel(cx - y, cy + x, color);
+		PutPixel(cx + y, cy + x, color);
+		PutPixel(cx - y, cy - x, color);
+		PutPixel(cx + y, cy - x, color);
 		if (f > -x) {
 			f += -2 * x + 1;
 			--x;
@@ -92,10 +92,10 @@ void CircleMidpoint (int xc, int yc, uint16_t diameter, pixel_t color)
 	int diff_dSE_dE= dSE - dE ;
 
 	if (!r) return;
-	putPixel(xc-r, yc, color);
-	putPixel(xc+r, yc, color);
-	putPixel(xc, yc-r, color);
-	putPixel(xc, yc+r, color);
+	PutPixel(xc-r, yc, color);
+	PutPixel(xc+r, yc, color);
+	PutPixel(xc, yc-r, color);
+	PutPixel(xc, yc+r, color);
 
 	while (y > x)    //only formulate 1/8 of circle
 	{
@@ -108,14 +108,14 @@ void CircleMidpoint (int xc, int yc, uint16_t diameter, pixel_t color)
 		dE += 2 ;
 		++x ;
 
-		putPixel(xc-x, yc-y, color);//upper left left
-		putPixel(xc+x, yc-y, color);//upper right right
-		putPixel(xc-y, yc-x, color);//upper upper left
-		putPixel(xc+y, yc-x, color);//upper upper right
-		putPixel(xc-y, yc+x, color);//lower lower left
-		putPixel(xc+y, yc+x, color);//lower lower right
-		putPixel(xc-x, yc+y, color);//lower left left
-		putPixel(xc+x, yc+y, color);//lower right right
+		PutPixel(xc-x, yc-y, color);//upper left left
+		PutPixel(xc+x, yc-y, color);//upper right right
+		PutPixel(xc-y, yc-x, color);//upper upper left
+		PutPixel(xc+y, yc-x, color);//upper upper right
+		PutPixel(xc-y, yc+x, color);//lower lower left
+		PutPixel(xc+y, yc+x, color);//lower lower right
+		PutPixel(xc-x, yc+y, color);//lower left left
+		PutPixel(xc+x, yc+y, color);//lower right right
 	}
 }
 
@@ -133,8 +133,8 @@ void FilledCircleMidpoint (int xc, int yc, uint16_t diameter, pixel_t color)
 
 	if (!r) return;
 	DrawHorizontalLine(xc-r, xc+r, yc, color);
-	putPixel(xc, yc-r, color);
-	putPixel(xc, yc+r, color);
+	PutPixel(xc, yc-r, color);
+	PutPixel(xc, yc+r, color);
 	
 	while (y > x)    //only formulate 1/8 of circle
 	{
@@ -162,24 +162,24 @@ void CircleOptimized (int xc, int yc, uint16_t diameter, pixel_t color)
     int          cd2= 0;    //current distance squared - radius squared
 
     if (!r) return; 
-    putPixel(xc-r, yc, color);
-    putPixel(xc+r, yc, color);
-    putPixel(xc, yc-r, color);
-    putPixel(xc, yc+r, color);
+    PutPixel(xc-r, yc, color);
+    PutPixel(xc+r, yc, color);
+    PutPixel(xc, yc-r, color);
+    PutPixel(xc, yc+r, color);
  
     while (x > y)    //only formulate 1/8 of circle
     {
         cd2-= (--x) - (++y);
         if (cd2 < 0) cd2+=x++;
 
-        putPixel(xc-x, yc-y, color);//upper left left
-        putPixel(xc-y, yc-x, color);//upper upper left
-        putPixel(xc+y, yc-x, color);//upper upper right
-        putPixel(xc+x, yc-y, color);//upper right right
-        putPixel(xc-x, yc+y, color);//lower left left
-        putPixel(xc-y, yc+x, color);//lower lower left
-        putPixel(xc+y, yc+x, color);//lower lower right
-        putPixel(xc+x, yc+y, color);//lower right right
+        PutPixel(xc-x, yc-y, color);//upper left left
+        PutPixel(xc-y, yc-x, color);//upper upper left
+        PutPixel(xc+y, yc-x, color);//upper upper right
+        PutPixel(xc+x, yc-y, color);//upper right right
+        PutPixel(xc-x, yc+y, color);//lower left left
+        PutPixel(xc-y, yc+x, color);//lower lower left
+        PutPixel(xc+y, yc+x, color);//lower lower right
+        PutPixel(xc+x, yc+y, color);//lower right right
      } 
 }
 
@@ -211,15 +211,15 @@ void BanuDrawCircle (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 			ty -= 2;
 		}
 		
-		putPixel(cx-y, cy-x, color);
-		putPixel(cx+y, cy-x, color);
-		putPixel(cx-y, cy+x, color);
-		putPixel(cx+y, cy+x, color);
+		PutPixel(cx-y, cy-x, color);
+		PutPixel(cx+y, cy-x, color);
+		PutPixel(cx-y, cy+x, color);
+		PutPixel(cx+y, cy+x, color);
 
-		putPixel(cx-x, cy-y, color);
-		putPixel(cx+x, cy-y, color);
-		putPixel(cx-x, cy+y, color);
-		putPixel(cx+x, cy+y, color);
+		PutPixel(cx-x, cy-y, color);
+		PutPixel(cx+x, cy-y, color);
+		PutPixel(cx-x, cy+y, color);
+		PutPixel(cx+x, cy+y, color);
 		
 	}
 }
@@ -253,17 +253,17 @@ void NewCircleAlgorithm (long diameter, POINT center, pixel_t col)
 		d += dx;
 		dx += 8;
 
-		putPixel (cy + center.x,  cx + center.y, col);        // 0-45     度の間
-		putPixel (-cy + mirror_center.x,  cx + center.y, col); // 135-180  度の間
+		PutPixel (cy + center.x,  cx + center.y, col);        // 0-45     度の間
+		PutPixel (-cy + mirror_center.x,  cx + center.y, col); // 135-180  度の間
 
-		putPixel (cx + center.x,  cy + center.y, col);        // 45-90    度の間
-		putPixel (-cx + mirror_center.x,  cy + center.y, col); // 90-135   度の間
+		PutPixel (cx + center.x,  cy + center.y, col);        // 45-90    度の間
+		PutPixel (-cx + mirror_center.x,  cy + center.y, col); // 90-135   度の間
 
-		putPixel (cy + center.x, -cx + mirror_center.y, col); // 315-360  度の間
-		putPixel (-cy + mirror_center.x, -cx + mirror_center.y, col);  // 180-225  度の間
+		PutPixel (cy + center.x, -cx + mirror_center.y, col); // 315-360  度の間
+		PutPixel (-cy + mirror_center.x, -cx + mirror_center.y, col);  // 180-225  度の間
 
-		putPixel (cx + center.x, -cy + mirror_center.y, col); // 270-315  度の間
-		putPixel (-cx + mirror_center.x, -cy + mirror_center.y, col);  // 225-270  度の間
+		PutPixel (cx + center.x, -cy + mirror_center.y, col); // 270-315  度の間
+		PutPixel (-cx + mirror_center.x, -cy + mirror_center.y, col);  // 225-270  度の間
 	}
 }
 
@@ -284,10 +284,10 @@ void OstCircle (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 	int dy = 1; // Pdy has been initialised
 	int dxy = diameter - 1; // Pdxy has been initialised
 
-	putPixel (cx-r, cy, color);
-	putPixel (cx+r, cy, color);
-	putPixel (cy, cx-r, color);
-	putPixel (cy, cx+r, color);
+	PutPixel (cx-r, cy, color);
+	PutPixel (cx+r, cy, color);
+	PutPixel (cy, cx-r, color);
+	PutPixel (cy, cx+r, color);
 	if (diameter <= 9) {
 		while (dxy > 0) {
 			y++;
@@ -300,28 +300,28 @@ void OstCircle (int16_t cx, int16_t cy, uint16_t diameter, pixel_t color)
 				dxy -= 4; //increment like phase
 				d -= dxy;
 			}
-			putPixel (cx-x, cx-y, color);
-			putPixel (cx+x, cx-y, color);
-			putPixel (cx-y, cx-x, color);
-			putPixel (cx+y, cx-x, color);
-			putPixel (cx-x, cx+y, color);
-			putPixel (cx+x, cx+y, color);
-			putPixel (cx-y, cx+x, color);
-			putPixel (cx+y, cx+x, color);
+			PutPixel (cx-x, cx-y, color);
+			PutPixel (cx+x, cx-y, color);
+			PutPixel (cx-y, cx-x, color);
+			PutPixel (cx+y, cx-x, color);
+			PutPixel (cx-x, cx+y, color);
+			PutPixel (cx+x, cx+y, color);
+			PutPixel (cx-y, cx+x, color);
+			PutPixel (cx+y, cx+x, color);
 
 		}
 	}else {
 		// 分岐が少ない版
 SA:
 		y++;
-		putPixel (cx-x, cx-y, color);
-		putPixel (cx+x, cx-y, color);
-		putPixel (cx-y, cx-x, color);
-		putPixel (cx+y, cx-x, color);
-		putPixel (cx-x, cx+y, color);
-		putPixel (cx+x, cx+y, color);
-		putPixel (cx-y, cx+x, color);
-		putPixel (cx+y, cx+x, color);
+		PutPixel (cx-x, cx-y, color);
+		PutPixel (cx+x, cx-y, color);
+		PutPixel (cx-y, cx-x, color);
+		PutPixel (cx+y, cx-x, color);
+		PutPixel (cx-x, cx+y, color);
+		PutPixel (cx+x, cx+y, color);
+		PutPixel (cx-y, cx+x, color);
+		PutPixel (cx+y, cx+x, color);
 
 		dxy -= 2;
 		dy += 2;
@@ -332,14 +332,14 @@ SA:
 SD:
 		x--;
 		y++;
-		putPixel (cx-x, cx-y, color);
-		putPixel (cx+x, cx-y, color);
-		putPixel (cx-y, cx-x, color);
-		putPixel (cx+y, cx-x, color);
-		putPixel (cx-x, cx+y, color);
-		putPixel (cx+x, cx+y, color);
-		putPixel (cx-y, cx+x, color);
-		putPixel (cx+y, cx+x, color);
+		PutPixel (cx-x, cx-y, color);
+		PutPixel (cx+x, cx-y, color);
+		PutPixel (cx-y, cx-x, color);
+		PutPixel (cx+y, cx-x, color);
+		PutPixel (cx-x, cx+y, color);
+		PutPixel (cx+x, cx+y, color);
+		PutPixel (cx-y, cx+x, color);
+		PutPixel (cx+y, cx+x, color);
 		
 		dxy -= 4;
 		if (dxy <= 0) {
