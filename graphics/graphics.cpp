@@ -39,7 +39,7 @@ void SetClippingRect(int16_t x, int16_t y, uint16_t w, uint16_t h)
 }
 
 static
-void inline PutPixel_Unsafe(pixel_t* pDest, pixel_t color)
+void inline PutPixel(pixel_t* pDest, pixel_t color)
 {
 	*pDest = BlendColor(color, *pDest);
 }
@@ -48,7 +48,7 @@ void PutPixel(int16_t x, int16_t y, pixel_t color)
 {
 	if (RectContains(clippingRect_, x, y)) {
 		pixel_t* pDest = GetPixelPtr(x, y);
-		PutPixel_Unsafe(pDest, color);
+		PutPixel(pDest, color);
 	}
 }
 
@@ -144,7 +144,7 @@ void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color)
 	pixel_t* ptr = GetPixelPtr(x2, y2);
 	for (int iy=0; iy<h2; ++iy) {
 		for (uint16_t ix=0; ix<w2; ++ix) {
-			PutPixel_Unsafe(ptr+ix, color);
+			PutPixel(ptr+ix, color);
 		}
 		OffsetPtr(ptr, GetLineOffset());
 	}
@@ -166,14 +166,14 @@ void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y, pixel_t color)
 	x2 = std::min<int16_t>(x2, clippingRect_.x+clippingRect_.w);
 	
 	pixel_t* ptr = GetPixelPtr(x1, y);
-#if 0
-	memset_32(ptr, color, x2-x1);
-#else
-	for (uint32_t x=x1; x<x2; ++x) {
-		PutPixel_Unsafe(ptr, color);
-		++ptr;
+	if ((color & AMASK) == AMASK) {
+		memset_32(ptr, color, x2-x1);
+	}else {
+		for (uint32_t x=x1; x<x2; ++x) {
+			PutPixel(ptr, color);
+			++ptr;
+		}
 	}
-#endif
 }
 
 void DrawVerticalLine(int16_t x, int16_t y1, int16_t y2, pixel_t color)

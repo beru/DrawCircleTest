@@ -16,6 +16,8 @@
 
 #include "timer.h"
 
+#include <gdiplus.h>
+
 namespace {
 
 HWND hWnd;
@@ -131,8 +133,19 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	Timer timer;
 	float diameter = radius_*2;
-	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x8F2F441F);
+
+#if 1
+	Graphics::DrawFilledCircleAA(x_, y_, diameter, -1);
 //	Graphics::DrawFilledCircleAA(x_, y_, diameter/2, 0xFF005555);
+#else
+	{
+		using namespace Gdiplus;
+		Gdiplus::Graphics g(hMemDC);
+		g.SetSmoothingMode(SmoothingModeAntiAlias);
+		Gdiplus::SolidBrush b(Color(-1));
+		g.FillEllipse(&b, x_-radius_, y_-radius_, diameter, diameter);
+	}
+#endif
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
 	
