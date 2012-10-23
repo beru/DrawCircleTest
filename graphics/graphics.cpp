@@ -169,10 +169,14 @@ void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y, pixel_t color)
 	if ((color & AMASK) == AMASK) {
 		memset_32(ptr, color, x2-x1);
 	}else {
+#if 1
+		BlendFill_SSE2(ptr, color, x2-x1);
+#else
 		for (uint32_t x=x1; x<x2; ++x) {
 			PutPixel(ptr, color);
 			++ptr;
 		}
+#endif
 	}
 }
 

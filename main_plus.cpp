@@ -130,30 +130,32 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rec.top = prevY_-prevRadius_-5;
 	rec.right = prevX_+prevRadius_+5;
 	rec.bottom = prevY_+prevRadius_+5;
-	Graphics::FillRect(rec.left, rec.top, rec.right-rec.left, rec.bottom-rec.top, 0xFF000000);
+	Graphics::FillRect(0,0,1920,1080, 0xFF000000);
 	
 	Timer timer;
 	float diameter = radius_*2;
 
 #if 1
-	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0xFFFFFFFF);
-//	Graphics::DrawFilledCircleAA(x_, y_, diameter/2, 0xFF005555);
+	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x7F0000FF);
+	Graphics::DrawFilledCircleAA(x_+50, y_+50, diameter, 0x7F00FF00);
 #else
 	{
 		using namespace Gdiplus;
 		Gdiplus::Graphics g(hMemDC);
 		g.SetSmoothingMode(SmoothingModeAntiAlias8x8);
-		Gdiplus::SolidBrush b(Color(0xFFFFFFFF));
+		Gdiplus::SolidBrush b(Color(0x7F0000FF));
+		Gdiplus::SolidBrush b2(Color(0x7F00FF00));
 		g.FillEllipse(&b, x_-radius_, y_-radius_, diameter, diameter);
+		g.FillEllipse(&b2, x_-radius_+50, y_-radius_+50, diameter, diameter);
 	}
 #endif
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
 	
-	rec.left = x_-radius_-5;
-	rec.top = y_-radius_-5;
-	rec.right = x_ + radius_+5;
-	rec.bottom = y_ + radius_+5;
+	rec.left = 0;
+	rec.top = 0;
+	rec.right = 1920;
+	rec.bottom = 1080;
 	::InvalidateRect(hWnd, &rec, TRUE);
 	
 	TCHAR str[32];
