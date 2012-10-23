@@ -100,9 +100,9 @@ void OnMouseUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 //	}
 }
 
-static float x_ = 600;
-static float y_ = 600;
-static float radius_ = 500;
+static float x_ = 500;
+static float y_ = 500.5;
+static float radius_ = 300;
 static float prevX_ = x_;
 static float prevY_ = y_;
 static float prevRadius_ = radius_;
@@ -135,14 +135,14 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	float diameter = radius_*2;
 
 #if 1
-	Graphics::DrawFilledCircleAA(x_, y_, diameter, -1);
+	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0xFFFFFFFF);
 //	Graphics::DrawFilledCircleAA(x_, y_, diameter/2, 0xFF005555);
 #else
 	{
 		using namespace Gdiplus;
 		Gdiplus::Graphics g(hMemDC);
 		g.SetSmoothingMode(SmoothingModeAntiAlias);
-		Gdiplus::SolidBrush b(Color(-1));
+		Gdiplus::SolidBrush b(Color(0xFFFFFFFF));
 		g.FillEllipse(&b, x_-radius_, y_-radius_, diameter, diameter);
 	}
 #endif
@@ -169,8 +169,8 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	prevY_ = y_;
 	prevRadius_ = radius_;
 	
-	x_ += 0.2;
-	y_ -= 0.2;
-	radius_ += 0.1;
+	x_ += 0.1;
+	y_ -= 0.1;
+//	radius_ += 0.1;
 }
 
