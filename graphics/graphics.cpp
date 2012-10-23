@@ -67,10 +67,30 @@ pixel_t AdjustAlpha(pixel_t color, float v)
 	return (color & ~AMASK) | ((uint32_t)(color * v) & AMASK);
 }
 
-// http://www.virtualdub.org/blog/pivot/entry.php?id=117
 pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
 {
 	assert(sizeof(pixel_t) == sizeof(uint32_t));
+#if 1
+	// http://stereopsis.com/doubleblend.html
+	const uint32_t s = foreColor;
+	const uint32_t d = backColor;
+	const uint32_t a     = (s >> 24) + 1;
+	const uint32_t dstrb = d & 0xFF00FF;
+	const uint32_t dstg  = d & 0xFF00;
+	const uint32_t srcrb = s & 0xFF00FF;
+	const uint32_t srcg  = s & 0xFF00;
+	uint32_t drb = srcrb - dstrb;
+	uint32_t dg  =  srcg - dstg;
+	drb *= a;
+	dg  *= a;  
+	drb >>= 8;
+	dg  >>= 8;
+	uint32_t rb = (drb + dstrb) & 0xFF00FF;
+	uint32_t g  = (dg  + dstg) & 0xFF00;
+	pixel_t ret = rb | g;
+	return ret;
+#else
+	// http://www.virtualdub.org/blog/pivot/entry.php?id=117
 	uint32_t sRB = foreColor & 0xff00ff;
 	uint32_t sG = foreColor & 0x00ff00;
 	uint32_t dRB = backColor & 0xff00ff;
@@ -81,6 +101,7 @@ pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
 	uint32_t oRB = (dRB + (((sRB - dRB) * sA + 0x800080) >> 8)) & 0xff00ff;
 	uint32_t oG = (dG + (((sG - dG ) * sA + 0x008000) >> 8)) & 0x00ff00;
 	pixel_t ret = oRB + oG;
+#endif
 	return ret;
 }
 

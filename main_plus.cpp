@@ -98,9 +98,9 @@ void OnMouseUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 //	}
 }
 
-static float x_ = 301.5;
-static float y_ = 810.0;
-static float radius_ = 200;
+static float x_ = 600;
+static float y_ = 600;
+static float radius_ = 500;
 static float prevX_ = x_;
 static float prevY_ = y_;
 static float prevRadius_ = radius_;
@@ -132,6 +132,7 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	Timer timer;
 	float diameter = radius_*2;
 	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x8F2F441F);
+//	Graphics::DrawFilledCircleAA(x_, y_, diameter/2, 0xFF005555);
 	
 	double elapsed = timer.ElapsedSecond() * 1000;
 	
