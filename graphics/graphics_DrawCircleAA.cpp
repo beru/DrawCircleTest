@@ -213,24 +213,21 @@ void drawLine2(
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
 	if (drawUpper) {
 		if (iyMinus != (int)floor(prevYMinus)) {
-			float leftArea = prescaledCurvedPart * (1.0f - distFloor(prevYMinus));
-	//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-			float rightRectArea = 1.0f - distFloor(yMinus);	// 右側のピクセルの矩形部分だけ
-			float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-			int16_t y = iyMinus+yOffset1-1;
+			int16_t y = iyMinus + yOffset1;
 			if (y < ylimits[0]) {
-				setPixel(x, y, color, leftArea);
-			}
-			y = iyMinus+yOffset1;
-			if (y < ylimits[0]) {
+				float leftArea = prescaledCurvedPart * (1.0f - distFloor(prevYMinus));
+		//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
+				float rightRectArea = 1.0f - distFloor(yMinus);	// 右側のピクセルの矩形部分だけ
+				float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
+				setPixel(x, y-1, color, leftArea);
 				setPixel(x, y, color, rightArea);
 				DrawHorizontalLine(x+xoffset, cx, y, color);
 			}
 		}else {
-	//		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
-			float remain = curvedPart + ceil(yMinus) - yMinus;
 			int16_t y = iyMinus+yOffset1;
 			if (y < ylimits[0]) {
+		//		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
+				float remain = curvedPart + ceil(yMinus) - yMinus;
 				setPixel(x, y, color, remain);
 			}
 		}
@@ -239,22 +236,19 @@ void drawLine2(
 #if 1
 	// 下側
 	if (iyPlus != (int)prevYPlus) {
-		float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
-		float leftRectArea = distFloor(yPlus);
-		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		int16_t y = iyPlus+yOffset2+1;
-		if (y > ylimits[1]) {
-			setPixel(x2, y, color, rightArea);
-		}
-		y = iyPlus+yOffset2;
-		if (y > ylimits[1]) {
-			setPixel(x2, y, color, leftArea);
-			DrawHorizontalLine(cx, x2+xoffset, y, color);
-		}
-	}else {
-		float remain = areaDiff - (iyPlus - cy);
 		int16_t y = iyPlus+yOffset2;
 		if (y > ylimits[1]) {
+			float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
+			float leftRectArea = distFloor(yPlus);
+			float leftArea = (curvedPart - rightArea) + leftRectArea;
+			setPixel(x2, y, color, leftArea);
+			DrawHorizontalLine(cx, x2+xoffset, y, color);
+			setPixel(x2, y+1, color, rightArea);
+		}
+	}else {
+		int16_t y = iyPlus+yOffset2;
+		if (y > ylimits[1]) {
+			float remain = areaDiff - (iyPlus - cy);
 			setPixel(x2, y, color, remain);
 		}
 	}

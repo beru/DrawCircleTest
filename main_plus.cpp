@@ -16,6 +16,7 @@
 
 #include "timer.h"
 
+#define GDIPVER 0x0110
 #include <gdiplus.h>
 
 namespace {
@@ -141,7 +142,7 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 		using namespace Gdiplus;
 		Gdiplus::Graphics g(hMemDC);
-		g.SetSmoothingMode(SmoothingModeAntiAlias);
+		g.SetSmoothingMode(SmoothingModeAntiAlias8x8);
 		Gdiplus::SolidBrush b(Color(0xFFFFFFFF));
 		g.FillEllipse(&b, x_-radius_, y_-radius_, diameter, diameter);
 	}
