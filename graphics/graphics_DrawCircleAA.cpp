@@ -64,6 +64,18 @@ void setPixel(int16_t x, int16_t y, pixel_t color, float alpha)
 	PutPixel(x, y, AdjustAlpha(color, alpha));
 }
 
+static inline
+float distCeil(float v)
+{
+	return ceil(v) - v;
+}
+
+static inline
+float distFloor(float v)
+{
+	return v - floor(v);
+}
+
 void drawLine(
 	int16_t py,
 	float cx,
@@ -89,9 +101,9 @@ void drawLine(
 	// X座標の整数値が異なる場合は横2pixelに跨る。
 	// 左側 180°～225°
 	if (ixMinus != (int)prevXMinus) {
-		float leftArea = prescaledCurvedPart * (1.0f - (prevXMinus-floor(prevXMinus)));
+		float leftArea = prescaledCurvedPart * distCeil(prevXMinus);
 //		float leftArea2 = curvedPart * (ceil(prevXMinus)-prevXMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-		float rightRectArea = 1.0f - (xMinus-floor(xMinus));	// 右側のピクセルの矩形部分だけ
+		float rightRectArea = distCeil(xMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 		setPixel(ixMinus-1, py, color, leftArea);
 		setPixel(ixMinus, py, color, rightArea);
@@ -104,8 +116,8 @@ void drawLine(
 	DrawHorizontalLine(ixMinus+1, ixPlus, py, color);
 	// 右側 0°～ -45°
 	if (ixPlus != (int)prevXPlus) {
-		float rightArea = prescaledCurvedPart * (prevXPlus-floor(prevXPlus));
-		float leftRectArea = (xPlus-floor(xPlus));
+		float rightArea = prescaledCurvedPart * distFloor(prevXPlus);
+		float leftRectArea = distFloor(xPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
 		setPixel(ixPlus, py, color, leftArea);
 		setPixel(ixPlus+1, py, color, rightArea);
@@ -129,12 +141,6 @@ CircleSegment lerpCircleSegment(float pos, float radius, float rr)
 	ret.length = (seg0.length + diff.length * fraction) * radius;
 	ret.area = (seg0.area + diff.area * fraction) * rr;
 	return ret;
-}
-
-static inline
-float distFloor(float v)
-{
-	return v - floor(v);
 }
 
 void drawHalf(
@@ -215,9 +221,9 @@ void drawLine2(
 		if (iyMinus != (int)floor(prevYMinus)) {
 			int16_t y = iyMinus + yOffset1;
 			if (y < ylimits[0]) {
-				float leftArea = prescaledCurvedPart * (1.0f - distFloor(prevYMinus));
+				float leftArea = prescaledCurvedPart * distCeil(prevYMinus);
 		//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
-				float rightRectArea = 1.0f - distFloor(yMinus);	// 右側のピクセルの矩形部分だけ
+				float rightRectArea = distCeil(yMinus);	// 右側のピクセルの矩形部分だけ
 				float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
 				setPixel(x, y-1, color, leftArea);
 				setPixel(x, y, color, rightArea);
