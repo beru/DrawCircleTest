@@ -301,7 +301,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\graphics\graphics_DrawCircleAA.cpp"
+				RelativePath=".\graphics\graphics_DrawFilledCircleAA.cpp"
 				>
 			</File>
 			<File
