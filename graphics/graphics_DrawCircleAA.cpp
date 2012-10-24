@@ -323,25 +323,27 @@ void DrawFilledCircleAA(float cx, float cy, float diameter, pixel_t color)
 		initTable(TABLE_RADIUS);
 	}
 
-	float radius = diameter / 2.0;
-	
-	Rect recCircle;
-	recCircle.x = cx - radius;
-	recCircle.y = cy - radius;
-	recCircle.w = diameter;
-	recCircle.h = diameter;
-	Rect irec;
-	if (!RectIntersect(recCircle, clippingRect_, irec)) {
-		return;
+	if (color & AMASK) {
+		float radius = diameter / 2.0;
+		
+		Rect recCircle;
+		recCircle.x = cx - radius;
+		recCircle.y = cy - radius;
+		recCircle.w = diameter;
+		recCircle.h = diameter;
+		Rect irec;
+		if (!RectIntersect(recCircle, clippingRect_, irec)) {
+			return;
+		}
+		
+		int16_t ys[2];
+		// è„ë§
+		drawHalf(cx, cy+1, radius, color, -1.0, ys[0]);
+		// â∫ë§
+		drawHalf(cx, cy, radius, color, 1.0, ys[1]);
+		
+		drawHalf2(cx, cy, radius, color, ys);
 	}
-	
-	int16_t ys[2];
-	// è„ë§
-	drawHalf(cx, cy+1, radius, color, -1.0, ys[0]);
-	// â∫ë§
-	drawHalf(cx, cy, radius, color, 1.0, ys[1]);
-	
-	drawHalf2(cx, cy, radius, color, ys);
 }
 
 } // namespace Graphics {
