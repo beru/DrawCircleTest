@@ -143,9 +143,13 @@ void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color)
 	
 	pixel_t* ptr = GetPixelPtr(x2, y2);
 	for (int iy=0; iy<h2; ++iy) {
+#if 1
+		memset_32(ptr, color, w2);
+#else
 		for (uint16_t ix=0; ix<w2; ++ix) {
 			PutPixel(ptr+ix, color);
 		}
+#endif
 		OffsetPtr(ptr, GetLineOffset());
 	}
 }

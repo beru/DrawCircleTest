@@ -130,12 +130,15 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rec.top = prevY_-prevRadius_-5;
 	rec.right = prevX_+prevRadius_+5;
 	rec.bottom = prevY_+prevRadius_+5;
+
 	Graphics::FillRect(0,0,1920,1080, 0xFF303030);
-	
 	Timer timer;
+	
 	float diameter = radius_*2;
 
 #if 1
+//	Graphics::FillRect(x_-radius_, y_-radius_, diameter, diameter, 0x7F0000FF);
+//	Graphics::FillRect(x_-radius_+50, y_-radius_+50, diameter, diameter, 0x7F00FF00);
 	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x7F0000FF);
 	Graphics::DrawFilledCircleAA(x_+50, y_+50, diameter, 0x7F00FF00);
 #else
