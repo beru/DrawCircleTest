@@ -218,8 +218,8 @@ void drawLine2(
 	// 上側
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
 	if (drawUpper) {
+		int16_t y = iyMinus + yOffset1;
 		if (iyMinus != (int)floor(prevYMinus)) {
-			int16_t y = iyMinus + yOffset1;
 			if (y < ylimits[0]) {
 				float leftArea = prescaledCurvedPart * distCeil(prevYMinus);
 		//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
@@ -230,7 +230,6 @@ void drawLine2(
 				DrawHorizontalLine(x+xoffset, cx, y, color);
 			}
 		}else {
-			int16_t y = iyMinus+yOffset1;
 			if (y < ylimits[0]) {
 		//		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 				float remain = curvedPart + ceil(yMinus) - yMinus;
@@ -241,8 +240,8 @@ void drawLine2(
 	
 #if 1
 	// 下側
+	int16_t y = iyPlus+yOffset2;
 	if (iyPlus != (int)prevYPlus) {
-		int16_t y = iyPlus+yOffset2;
 		if (y > ylimits[1]) {
 			float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
 			float leftRectArea = distFloor(yPlus);
@@ -252,7 +251,6 @@ void drawLine2(
 			setPixel(x2, y+1, color, rightArea);
 		}
 	}else {
-		int16_t y = iyPlus+yOffset2;
 		if (y > ylimits[1]) {
 			float remain = areaDiff - (iyPlus - cy);
 			setPixel(x2, y, color, remain);

@@ -130,7 +130,7 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rec.top = prevY_-prevRadius_-5;
 	rec.right = prevX_+prevRadius_+5;
 	rec.bottom = prevY_+prevRadius_+5;
-	Graphics::FillRect(0,0,1920,1080, 0xFF000000);
+	Graphics::FillRect(0,0,1920,1080, 0xFF303030);
 	
 	Timer timer;
 	float diameter = radius_*2;
