@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<title>Canvas Arc Test</title>
+
+<script>
+
+var ctx;
+
+var x = 500;
+var y = 500.5;
+
+function drawCircles()
+{
+	ctx.globalAlpha = 1.0;
+	ctx.beginPath();
+	ctx.fillStyle = "rgb(48,48,48)";
+	ctx.fillRect(0, 0, 1920, 1080);
+	
+	var t0 = new Date();
+	
+	ctx.globalAlpha = 0.5;
+	
+	var startAngle = 0;
+	var endAngle = (360) * Math.PI / 180;
+	
+	ctx.beginPath();
+	ctx.fillStyle = "rgb(0,0,255)";
+	ctx.arc(x, y, 300, startAngle, endAngle, true);
+	ctx.fill();
+	
+	ctx.beginPath();
+	ctx.fillStyle = "rgb(0,255,0)";
+	ctx.arc(x+50, y+50, 300, startAngle, endAngle, true);
+	ctx.fill();
+	
+	var t1 = new Date();
+	
+	ctx.fillText(t1-t0, 10, 50);
+	ctx.fillText(x, 10, 100);
+	ctx.fillText(y, 10, 150);
+	
+	x += 0.1;
+	y -= 0.1;
+}
+
+onload = function() {
+
+	var canvas = document.getElementById('canvas');
+	ctx = canvas.getContext('2d');
+	ctx.font = "20px 'Times New Roman'";
+	setInterval(drawCircles, 1);
+}
+</script>
+
+</head>
+<body>
+
+<canvas id="canvas" width="1920" height="1080"></canvas>
+
+
+</body>
+</html>
