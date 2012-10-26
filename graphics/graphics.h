@@ -16,6 +16,7 @@ pixel_t AdjustAlpha(pixel_t color, float v);
 pixel_t BlendColor(pixel_t foreColor, pixel_t backColor);
 
 void PutPixel(int16_t x, int16_t y, pixel_t color);
+void FillAll(pixel_t color);
 void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color);
 
 void DrawHorizontalLine(int16_t x1, int16_t x2, int16_t y2, pixel_t color);

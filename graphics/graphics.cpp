@@ -105,6 +105,13 @@ pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
 	return ret;
 }
 
+void FillAll(pixel_t color)
+{
+	memset_32
+//	StreamWrite_32
+		(buff_, color, (stride_/4)*height_);
+}
+
 void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color)
 {
 	// 領域チェック

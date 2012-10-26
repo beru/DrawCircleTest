@@ -44,6 +44,20 @@ void memset_32(
 #endif
 }
 
+void StreamWrite_32(
+	void* dest,		// 4 bytes aligned
+	uint32_t value,	// 4 bytes value
+	size_t count	// number of times to copy value
+	)
+{
+	size_t n16bytes = count / 4;
+	__m128i vec = _mm_set1_epi32(value);
+	__m128i* pVec = (__m128i*)dest;
+	for (size_t i=0; i<n16bytes; ++i) {
+		_mm_stream_si128(pVec++, vec);
+	}
+}
+
 void BlendFill_SSE2(
 	void* dest,		// 4 bytes aligned destination buffer
 	uint32_t argb,	// 4 bytes argb color

@@ -37,8 +37,8 @@ void OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	BITMAPINFO* pBMI = (BITMAPINFO*) &bmiBuff[0];
 	BITMAPINFO& bmi = *pBMI;
 	
-	int width = 1920;
-	int height = 1080;
+	int width = 2560;
+	int height = 1440;
 	int bitsPerPixel = 32;
 	
 #if 0
@@ -131,7 +131,17 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rec.right = prevX_+prevRadius_+5;
 	rec.bottom = prevY_+prevRadius_+5;
 
-	Graphics::FillRect(0,0,1920,1080, 0xFF303030);
+	if (0) {
+		RECT rect;
+		rect.left = 0;
+		rect.top = 0;
+		rect.right = 1920;
+		rect.bottom = 1080;
+		FillRect(hMemDC, &rect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	}
+	Graphics::FillAll(0xFF303030);
+//	Graphics::FillRect(0,0,2560,1440, 0xFF303030);
+	
 	Timer timer;
 	
 	float diameter = radius_*2;
