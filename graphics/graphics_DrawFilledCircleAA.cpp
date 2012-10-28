@@ -185,6 +185,7 @@ void drawLine2_Top(
 	int16_t x,
 	int16_t x2,
 	int16_t xoffset,
+	int16_t yoffset,
 	float cx,
 	float cy,
 	pixel_t color,
@@ -192,28 +193,19 @@ void drawLine2_Top(
 	int16_t ylimit
 	)
 {
-	float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
-	float lenDiff = prevSeg.length - seg.length;
-	float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
-	float prescaledCurvedPart = curvedPart / lenDiff;
-
 	float yMinus = cy - seg.length;
-	float prevYMinus = cy - prevSeg.length;
 	
 	int iyMinus = floor(yMinus);
-	int yOffset1 = 1;
-	if (frac(cx)) {
-		yOffset1 -= 1;
-	}
-	if (frac(cy)) {
-		yOffset1 += 1;
-	}
-
 	// 上側
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
-	int16_t y = iyMinus + yOffset1;
-	if (iyMinus != (int)floor(prevYMinus)) {
-		if (y < ylimit) {
+	int16_t y = iyMinus + yoffset;
+	if (y < ylimit) {
+		float prevYMinus = cy - prevSeg.length;
+		float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
+		float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
+		if (iyMinus != (int)floor(prevYMinus)) {
+			float lenDiff = prevSeg.length - seg.length;
+			float prescaledCurvedPart = curvedPart / lenDiff;
 			float leftArea = prescaledCurvedPart * distCeil(prevYMinus);
 	//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 			float rightRectArea = distCeil(yMinus);	// 右側のピクセルの矩形部分だけ
@@ -221,9 +213,7 @@ void drawLine2_Top(
 			setPixel(x, y-1, color, leftArea);
 			setPixel(x, y, color, rightArea);
 			DrawHorizontalLine(x+xoffset, cx, y, color);
-		}
-	}else {
-		if (y < ylimit) {
+		}else {
 	//		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 			float remain = curvedPart + ceil(yMinus) - yMinus;
 			setPixel(x, y, color, remain);
@@ -236,6 +226,7 @@ void drawLine2_Bottom(
 	int16_t x,
 	int16_t x2,
 	int16_t xoffset,
+	int16_t yoffset,
 	float cx,
 	float cy,
 	pixel_t color,
@@ -243,34 +234,25 @@ void drawLine2_Bottom(
 	int16_t ylimit
 	)
 {
-	float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
-	float lenDiff = prevSeg.length - seg.length;
-	float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
-	float prescaledCurvedPart = curvedPart / lenDiff;
-
 	float yPlus = cy + seg.length;
-	float prevYPlus = cy + prevSeg.length;
-	
 	int iyPlus = floor(yPlus);
-	int yOffset2 = 0;
-	if (frac(cx)) {
-		yOffset2 += 1;
-	}
-
 #if 1
 	// 下側
-	int16_t y = iyPlus+yOffset2;
-	if (iyPlus != (int)prevYPlus) {
-		if (y > ylimit) {
+	int16_t y = iyPlus+yoffset;
+	if (y > ylimit) {
+		float areaDiff = seg.area - prevSeg.area;	// 面積の差分が今回のライン分の面積
+		float prevYPlus = cy + prevSeg.length;
+		if (iyPlus != (int)prevYPlus) {
+			float lenDiff = prevSeg.length - seg.length;
+			float curvedPart = areaDiff - seg.length;	// 矩形部分を切り取る
+			float prescaledCurvedPart = curvedPart / lenDiff;
 			float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
 			float leftRectArea = distFloor(yPlus);
 			float leftArea = (curvedPart - rightArea) + leftRectArea;
 			setPixel(x2, y, color, leftArea);
 			DrawHorizontalLine(cx, x2+xoffset, y, color);
 			setPixel(x2, y+1, color, rightArea);
-		}
-	}else {
-		if (y > ylimit) {
+		}else {
 			float remain = areaDiff - (iyPlus - cy);
 			setPixel(x2, y, color, remain);
 		}
@@ -306,21 +288,14 @@ void drawHalf2(
 	if (frac(cy)) {
 		cy -= 1.0;
 	}
-	// 下側の最初の2pixel
-	{
-		// 左
-		CircleSegment seg = lerpCircleSegment(tx+ratioRadius, radius, rr);
-		if ((int)(cy+seg.length)==(int)(cy+prevSeg.length)) {
-			drawLine2_Bottom(cx-1,cx-1,+1,cx,cy,color, seg,prevSeg,ylimits[1]);
-		}
-		// 右
-		CircleSegment seg2 = lerpCircleSegment(tx2+ratioRadius, radius, rr);
-		if ((int)(cy+seg2.length)==(int)(cy+prevSeg2.length)) {
-			drawLine2_Bottom(cx+1-1,cx+1-1,0,cx,cy,color, seg2,prevSeg2,ylimits[1]);
-		}
-	}
 	float tx_ = tx;
 	float tx2_ = tx2;
+	CircleSegment prevSeg_ = prevSeg;
+	CircleSegment prevSeg2_ = prevSeg2;
+
+	int yOffset1 = 1;
+	if (frac(cx)) yOffset1 -= 1;
+	if (frac(cy)) yOffset1 += 1;
 	// 上
 	for (size_t i=1; i<cnt+3; ++i) {
 		tx += ratioRadius;
@@ -328,15 +303,32 @@ void drawHalf2(
 		tx2 += ratioRadius;
 		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
 		// 左
-		drawLine2_Top(cx-i,cx-i-1,+1,cx,cy,color, seg,prevSeg,ylimits[0]);
+		drawLine2_Top(cx-i,cx-i-1,+1,yOffset1,cx,cy,color, seg,prevSeg,ylimits[0]);
 		// 右
-		drawLine2_Top(cx+i-1,cx+i,0,cx,cy,color, seg2,prevSeg2,ylimits[0]);
+		drawLine2_Top(cx+i-1,cx+i,0,yOffset1,cx,cy,color, seg2,prevSeg2,ylimits[0]);
 		
 		prevSeg = seg;
 		prevSeg2 = seg2;
 	}
 	tx = tx_;
 	tx2 = tx2_;
+	prevSeg = prevSeg_;
+	prevSeg2 = prevSeg2_;
+	int yOffset2 = 0;
+	if (frac(cx)) yOffset2 += 1;
+	// 下側の最初の2pixel
+	{
+		// 左
+		CircleSegment seg = lerpCircleSegment(tx+ratioRadius, radius, rr);
+		if ((int)(cy+seg.length)==(int)(cy+prevSeg.length)) {
+			drawLine2_Bottom(cx-1,cx-1,+1,yOffset2,cx,cy,color, seg,prevSeg,ylimits[1]);
+		}
+		// 右
+		CircleSegment seg2 = lerpCircleSegment(tx2+ratioRadius, radius, rr);
+		if ((int)(cy+seg2.length)==(int)(cy+prevSeg2.length)) {
+			drawLine2_Bottom(cx+1-1,cx+1-1,0,yOffset2,cx,cy,color, seg2,prevSeg2,ylimits[1]);
+		}
+	}
 	// 下
 	for (size_t i=1; i<cnt+3; ++i) {
 		tx += ratioRadius;
@@ -344,9 +336,9 @@ void drawHalf2(
 		tx2 += ratioRadius;
 		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
 		// 左
-		drawLine2_Bottom(cx-i,cx-i-1,+1,cx,cy,color, seg,prevSeg,ylimits[1]);
+		drawLine2_Bottom(cx-i,cx-i-1,+1,yOffset2,cx,cy,color, seg,prevSeg,ylimits[1]);
 		// 右
-		drawLine2_Bottom(cx+i-1,cx+i,0,cx,cy,color, seg2,prevSeg2,ylimits[1]);
+		drawLine2_Bottom(cx+i-1,cx+i,0,yOffset2,cx,cy,color, seg2,prevSeg2,ylimits[1]);
 		
 		prevSeg = seg;
 		prevSeg2 = seg2;
