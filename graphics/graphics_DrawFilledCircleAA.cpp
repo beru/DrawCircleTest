@@ -61,7 +61,7 @@ static const int TABLE_RADIUS = 512;
 static inline
 void setPixel(int16_t x, int16_t y, pixel_t color, float alpha)
 {
-	PutPixel(x, y, AdjustAlpha(color, alpha));
+	PutPixel(x, y, color, alpha);
 }
 
 static inline
@@ -80,6 +80,7 @@ void drawLine(
 	int16_t py,
 	float cx,
 	pixel_t color,
+	float alpha,
 	CircleSegment seg,
 	CircleSegment prevSeg,
 	int tail
@@ -105,12 +106,12 @@ void drawLine(
 //		float leftArea2 = curvedPart * (ceil(prevXMinus)-prevXMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 		float rightRectArea = distCeil(xMinus);	// 右側のピクセルの矩形部分だけ
 		float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-		setPixel(ixMinus-1, py, color, leftArea);
-		setPixel(ixMinus, py, color, rightArea);
+		setPixel(ixMinus-1, py, color, leftArea*alpha);
+		setPixel(ixMinus, py, color, rightArea*alpha);
 	}else {
 //		float remain = areaDiff - (cx - (int)(xMinus+1.0f));
 		float remain = curvedPart + ceil(xMinus) - xMinus;
-		setPixel(ixMinus, py, color, remain);
+		setPixel(ixMinus, py, color, remain*alpha);
 	}
 	// 中間線
 	DrawHorizontalLine(ixMinus+1, ixPlus, py, color);
@@ -119,11 +120,11 @@ void drawLine(
 		float rightArea = prescaledCurvedPart * distFloor(prevXPlus);
 		float leftRectArea = distFloor(xPlus);
 		float leftArea = (curvedPart - rightArea) + leftRectArea;
-		setPixel(ixPlus, py, color, leftArea);
-		setPixel(ixPlus+1, py, color, rightArea);
+		setPixel(ixPlus, py, color, leftArea*alpha);
+		setPixel(ixPlus+1, py, color, rightArea*alpha);
 	}else {
 		float remain = areaDiff - (ixPlus - cx);
-		setPixel(ixPlus, py, color, remain);
+		setPixel(ixPlus, py, color, remain*alpha);
 	}
 }
 
@@ -148,6 +149,7 @@ void drawHalf(
 	float cy,
 	float radius,
 	pixel_t color,
+	float alpha,
 	float direction,
 	int16_t& lasty
 	)
@@ -174,7 +176,7 @@ void drawHalf(
 		CircleSegment seg = lerpCircleSegment(ty, radius, rr);
 		int16_t ipy = (int16_t)py;
 		if (ipy >= clippingRect_.y && ipy < clippingRect_.y+clippingRect_.h) {
-			drawLine(ipy,cx,color,seg,prevSeg,0);
+			drawLine(ipy,cx,color,alpha,seg,prevSeg,0);
 			lasty = ipy;
 		}
 		prevSeg = seg;
@@ -183,18 +185,17 @@ void drawHalf(
 
 void drawLine2_Top(
 	int16_t x,
-	int16_t x2,
 	int16_t xoffset,
 	int16_t yoffset,
 	float cx,
 	float cy,
 	pixel_t color,
+	float alpha,
 	CircleSegment seg, CircleSegment prevSeg,
 	int16_t ylimit
 	)
 {
 	float yMinus = cy - seg.length;
-	
 	int iyMinus = floor(yMinus);
 	// 上側
 	// Y座標の整数値が異なる場合は縦2pixelに跨る。
@@ -210,13 +211,13 @@ void drawLine2_Top(
 	//		float leftArea2 = curvedPart * (ceil(prevYMinus)-prevYMinus)/lenDiff;	// カーブ領域をスケールしたもので近似
 			float rightRectArea = distCeil(yMinus);	// 右側のピクセルの矩形部分だけ
 			float rightArea = (curvedPart - leftArea) + rightRectArea;	// 
-			setPixel(x, y-1, color, leftArea);
-			setPixel(x, y, color, rightArea);
+			setPixel(x, y-1, color, leftArea*alpha);
+			setPixel(x, y, color, rightArea*alpha);
 			DrawHorizontalLine(x+xoffset, cx, y, color);
 		}else {
 	//		float remain = areaDiff - (cy - (int)(yMinus+1.0f));
 			float remain = curvedPart + ceil(yMinus) - yMinus;
-			setPixel(x, y, color, remain);
+			setPixel(x, y, color, remain*alpha);
 		}
 	}
 	
@@ -224,12 +225,12 @@ void drawLine2_Top(
 
 void drawLine2_Bottom(
 	int16_t x,
-	int16_t x2,
 	int16_t xoffset,
 	int16_t yoffset,
 	float cx,
 	float cy,
 	pixel_t color,
+	float alpha,
 	CircleSegment seg, CircleSegment prevSeg,
 	int16_t ylimit
 	)
@@ -249,12 +250,12 @@ void drawLine2_Bottom(
 			float rightArea = prescaledCurvedPart * distFloor(prevYPlus);
 			float leftRectArea = distFloor(yPlus);
 			float leftArea = (curvedPart - rightArea) + leftRectArea;
-			setPixel(x2, y, color, leftArea);
-			DrawHorizontalLine(cx, x2+xoffset, y, color);
-			setPixel(x2, y+1, color, rightArea);
+			setPixel(x, y, color, leftArea*alpha);
+			DrawHorizontalLine(cx, x+xoffset, y, color);
+			setPixel(x, y+1, color, rightArea*alpha);
 		}else {
 			float remain = areaDiff - (iyPlus - cy);
-			setPixel(x2, y, color, remain);
+			setPixel(x, y, color, remain*alpha);
 		}
 	}
 #endif
@@ -265,6 +266,7 @@ void drawHalf2(
 	float cy,
 	float radius,
 	pixel_t color,
+	float alpha,
 	int16_t ylimits[2]
 	)
 {
@@ -303,9 +305,9 @@ void drawHalf2(
 		tx2 += ratioRadius;
 		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
 		// 左
-		drawLine2_Top(cx-i,cx-i-1,+1,yOffset1,cx,cy,color, seg,prevSeg,ylimits[0]);
+		drawLine2_Top(cx-i,+1,yOffset1,cx,cy,color,alpha, seg,prevSeg,ylimits[0]);
 		// 右
-		drawLine2_Top(cx+i-1,cx+i,0,yOffset1,cx,cy,color, seg2,prevSeg2,ylimits[0]);
+		drawLine2_Top(cx+i-1,0,yOffset1,cx,cy,color,alpha, seg2,prevSeg2,ylimits[0]);
 		
 		prevSeg = seg;
 		prevSeg2 = seg2;
@@ -321,12 +323,12 @@ void drawHalf2(
 		// 左
 		CircleSegment seg = lerpCircleSegment(tx+ratioRadius, radius, rr);
 		if ((int)(cy+seg.length)==(int)(cy+prevSeg.length)) {
-			drawLine2_Bottom(cx-1,cx-1,+1,yOffset2,cx,cy,color, seg,prevSeg,ylimits[1]);
+			drawLine2_Bottom(cx-1,+1,yOffset2,cx,cy,color,alpha, seg,prevSeg,ylimits[1]);
 		}
 		// 右
 		CircleSegment seg2 = lerpCircleSegment(tx2+ratioRadius, radius, rr);
 		if ((int)(cy+seg2.length)==(int)(cy+prevSeg2.length)) {
-			drawLine2_Bottom(cx+1-1,cx+1-1,0,yOffset2,cx,cy,color, seg2,prevSeg2,ylimits[1]);
+			drawLine2_Bottom(cx+1-1,0,yOffset2,cx,cy,color,alpha, seg2,prevSeg2,ylimits[1]);
 		}
 	}
 	// 下
@@ -336,9 +338,9 @@ void drawHalf2(
 		tx2 += ratioRadius;
 		CircleSegment seg2 = lerpCircleSegment(tx2, radius, rr);
 		// 左
-		drawLine2_Bottom(cx-i,cx-i-1,+1,yOffset2,cx,cy,color, seg,prevSeg,ylimits[1]);
+		drawLine2_Bottom(cx-i-1,+1,yOffset2,cx,cy,color,alpha, seg,prevSeg,ylimits[1]);
 		// 右
-		drawLine2_Bottom(cx+i-1,cx+i,0,yOffset2,cx,cy,color, seg2,prevSeg2,ylimits[1]);
+		drawLine2_Bottom(cx+i,0,yOffset2,cx,cy,color,alpha, seg2,prevSeg2,ylimits[1]);
 		
 		prevSeg = seg;
 		prevSeg2 = seg2;
@@ -366,13 +368,14 @@ void DrawFilledCircleAA(float cx, float cy, float diameter, pixel_t color)
 			return;
 		}
 		
+		float alpha = (color >> ASHIFT) / 255.0;
 		int16_t ys[2];
 		// 上側
-		drawHalf(cx, cy+1, radius, color, -1.0, ys[0]);
+		drawHalf(cx, cy+1, radius, color, alpha, -1.0, ys[0]);
 		// 下側
-		drawHalf(cx, cy, radius, color, 1.0, ys[1]);
+		drawHalf(cx, cy, radius, color, alpha, 1.0, ys[1]);
 		
-		drawHalf2(cx, cy, radius, color, ys);
+		drawHalf2(cx, cy, radius, color, alpha, ys);
 	}
 }
 

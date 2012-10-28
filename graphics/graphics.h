@@ -14,8 +14,10 @@ pixel_t MakePixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 pixel_t ReplaceAlpha(pixel_t color, uint8_t a);
 pixel_t AdjustAlpha(pixel_t color, float v);
 pixel_t BlendColor(pixel_t foreColor, pixel_t backColor);
+pixel_t BlendColor(pixel_t foreColor, float foreColorAlpha, pixel_t backColor);
 
 void PutPixel(int16_t x, int16_t y, pixel_t color);
+void PutPixel(int16_t x, int16_t y, pixel_t color, float alpha);
 void FillAll(pixel_t color);
 void FillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, pixel_t color);
 

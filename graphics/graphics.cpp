@@ -39,6 +39,12 @@ void SetClippingRect(int16_t x, int16_t y, uint16_t w, uint16_t h)
 }
 
 static
+void inline PutPixel(pixel_t* pDest, pixel_t color, float alpha)
+{
+	*pDest = BlendColor(color, alpha, *pDest);
+}
+
+static
 void inline PutPixel(pixel_t* pDest, pixel_t color)
 {
 	*pDest = BlendColor(color, *pDest);
@@ -46,9 +52,19 @@ void inline PutPixel(pixel_t* pDest, pixel_t color)
 
 void PutPixel(int16_t x, int16_t y, pixel_t color)
 {
-	if (RectContains(clippingRect_, x, y)) {
+	if (RectContains(clippingRect_, x, y))
+	{
 		pixel_t* pDest = GetPixelPtr(x, y);
 		PutPixel(pDest, color);
+	}
+}
+
+void PutPixel(int16_t x, int16_t y, pixel_t color, float alpha)
+{
+	if (RectContains(clippingRect_, x, y))
+	{
+		pixel_t* pDest = GetPixelPtr(x, y);
+		PutPixel(pDest, color, alpha);
 	}
 }
 
@@ -67,22 +83,22 @@ pixel_t AdjustAlpha(pixel_t color, float v)
 	return (color & ~AMASK) | ((uint32_t)(color * v) & AMASK);
 }
 
-pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
+static inline
+pixel_t blendColor(pixel_t foreColor, uint32_t foreColorAlpha, pixel_t backColor)
 {
 	assert(sizeof(pixel_t) == sizeof(uint32_t));
 #if 1
 	// http://stereopsis.com/doubleblend.html
 	const uint32_t s = foreColor;
 	const uint32_t d = backColor;
-	const uint32_t a     = (s >> 24) + 1;
 	const uint32_t dstrb = d & 0xFF00FF;
 	const uint32_t dstg  = d & 0xFF00;
 	const uint32_t srcrb = s & 0xFF00FF;
 	const uint32_t srcg  = s & 0xFF00;
 	uint32_t drb = srcrb - dstrb;
 	uint32_t dg  =  srcg - dstg;
-	drb *= a;
-	dg  *= a;  
+	drb *= foreColorAlpha;
+	dg  *= foreColorAlpha;
 	drb >>= 8;
 	dg  >>= 8;
 	uint32_t rb = (drb + dstrb) & 0xFF00FF;
@@ -96,13 +112,21 @@ pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
 	uint32_t dRB = backColor & 0xff00ff;
 	uint32_t dG = backColor & 0x00ff00;
 	
-	uint32_t sA = (foreColor & 0xff000000) >> 24;
-	sA += (sA > 0);
-	uint32_t oRB = (dRB + (((sRB - dRB) * sA + 0x800080) >> 8)) & 0xff00ff;
-	uint32_t oG = (dG + (((sG - dG ) * sA + 0x008000) >> 8)) & 0x00ff00;
+	uint32_t oRB = (dRB + (((sRB - dRB) * foreColorAlpha + 0x800080) >> 8)) & 0xff00ff;
+	uint32_t oG = (dG + (((sG - dG ) * foreColorAlpha + 0x008000) >> 8)) & 0x00ff00;
 	pixel_t ret = oRB + oG;
 #endif
 	return ret;
+}
+
+pixel_t BlendColor(pixel_t foreColor, pixel_t backColor)
+{
+	return blendColor(foreColor, (foreColor >> 24) + 1, backColor);
+}
+
+pixel_t BlendColor(pixel_t foreColor, float foreColorAlpha, pixel_t backColor)
+{
+	return blendColor(foreColor, foreColorAlpha*256.0, backColor);
 }
 
 void FillAll(pixel_t color)
