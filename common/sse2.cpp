@@ -58,6 +58,21 @@ void StreamWrite_32(
 	}
 }
 
+static inline
+__m128i blendVec(__m128i destVec, __m128i alphaVec1, __m128i& srcVec0, __m128i& srcVec1)
+{
+	__m128i destVec0 = _mm_unpacklo_epi8(destVec, _mm_setzero_si128());
+	__m128i destVec1 = _mm_unpackhi_epi8(destVec, _mm_setzero_si128());
+	destVec0 = _mm_mullo_epi16(destVec0, alphaVec1);
+	destVec1 = _mm_mullo_epi16(destVec1, alphaVec1);
+	destVec0 = _mm_add_epi16(destVec0, srcVec0);
+	destVec1 = _mm_add_epi16(destVec1, srcVec1);
+	destVec0 = _mm_srli_epi16(destVec0, 8);
+	destVec1 = _mm_srli_epi16(destVec1, 8);
+	destVec0 = _mm_packus_epi16(destVec0, destVec1);
+	return destVec0;
+}
+
 void BlendFill_SSE2(
 	void* dest,		// 4 bytes aligned destination buffer
 	uint32_t argb,	// 4 bytes argb color
@@ -90,18 +105,25 @@ void BlendFill_SSE2(
 		srcVec0 = _mm_mullo_epi16(alphaVec0, srcVec0);
 		srcVec1 = _mm_mullo_epi16(alphaVec0, srcVec1);
 		__m128i* pDestVec = (__m128i*)pInts;
-		for (size_t i=0; i<vecCnt; ++i) {
-			__m128i destVec = _mm_load_si128(pDestVec);
-			__m128i destVec0 = _mm_unpacklo_epi8(destVec, _mm_setzero_si128());
-			__m128i destVec1 = _mm_unpackhi_epi8(destVec, _mm_setzero_si128());
-			destVec0 = _mm_mullo_epi16(destVec0, alphaVec1);
-			destVec1 = _mm_mullo_epi16(destVec1, alphaVec1);
-			destVec0 = _mm_add_epi16(destVec0, srcVec0);
-			destVec1 = _mm_add_epi16(destVec1, srcVec1);
-			destVec0 = _mm_srli_epi16(destVec0, 8);
-			destVec1 = _mm_srli_epi16(destVec1, 8);
-			destVec0 = _mm_packus_epi16(destVec0, destVec1);
-			_mm_store_si128(pDestVec, destVec0);
+		for (size_t i=0; i<vecCnt/4; ++i) {
+			__m128i vec0 = _mm_load_si128(pDestVec);
+			__m128i vec1 = _mm_load_si128(pDestVec+1);
+			__m128i vec2 = _mm_load_si128(pDestVec+2);
+			__m128i vec3 = _mm_load_si128(pDestVec+3);
+			vec0 = blendVec(vec0, alphaVec1, srcVec0, srcVec1);
+			vec1 = blendVec(vec1, alphaVec1, srcVec0, srcVec1);
+			vec2 = blendVec(vec2, alphaVec1, srcVec0, srcVec1);
+			vec3 = blendVec(vec3, alphaVec1, srcVec0, srcVec1);
+			_mm_store_si128(pDestVec+0, vec0);
+			_mm_store_si128(pDestVec+1, vec1);
+			_mm_store_si128(pDestVec+2, vec2);
+			_mm_store_si128(pDestVec+3, vec3);
+			pDestVec += 4;
+		}
+		for (size_t i=0; i<vecCnt%4; ++i) {
+			__m128i vec0 = _mm_load_si128(pDestVec);
+			vec0 = blendVec(vec0, alphaVec1, srcVec0, srcVec1);
+			_mm_store_si128(pDestVec+0, vec0);
 			++pDestVec;
 		}
 		pInts = (uint32_t*) pDestVec;
