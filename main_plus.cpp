@@ -24,9 +24,17 @@ namespace {
 HWND hWnd;
 HBITMAP hBMP;
 std::vector<uint8_t> bmiBuff(sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 256);
-//BITMAPINFO bmi;
+BITMAPINFO* pBMI;
 void* pBits;
 HDC hMemDC;
+HFONT hFont;
+
+float x_ = 500;
+float y_ = 500.5;
+float radius_;
+float prevRadius_;
+float prevX_ = x_;
+float prevY_ = y_;
 
 } // anonymous namespace
 
@@ -34,13 +42,17 @@ void OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	::SetTimer(hWnd, 100, 10, 0);
 	
-	BITMAPINFO* pBMI = (BITMAPINFO*) &bmiBuff[0];
+	pBMI = (BITMAPINFO*) &bmiBuff[0];
 	BITMAPINFO& bmi = *pBMI;
 	
-	int width = 2560;
-	int height = 1440;
+	int width = GetSystemMetrics(SM_CXFULLSCREEN);
+	int height = GetSystemMetrics(SM_CYFULLSCREEN);
 	int bitsPerPixel = 32;
+	width = (width + 3) & (~3);
 	
+	radius_ = height / 3;
+	prevRadius_ = radius_;
+
 #if 0
 	RGBQUAD rgb;
 	for (size_t i=0; i<256; ++i) {
@@ -59,12 +71,19 @@ void OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	::SelectObject(hMemDC, hBMP);
 
 	Graphics::SetCanvas(pBits, width, height, width*4);
+
+	LOGFONT lf = {0};
+	lf.lfHeight = -MulDiv(12, GetDeviceCaps(hMemDC, LOGPIXELSY), 72);
+	lf.lfQuality = CLEARTYPE_QUALITY;
+	hFont = ::CreateFontIndirect(&lf);
+	::SelectObject(hMemDC, hFont);
 }
 
 void OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	::DeleteDC(hMemDC);
 	::DeleteObject(hBMP);
+	::DeleteObject(hFont);
 }
 
 void OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -101,13 +120,6 @@ void OnMouseUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 //	}
 }
 
-static float x_ = 500;
-static float y_ = 500.5;
-static float radius_ = 300;
-static float prevX_ = x_;
-static float prevY_ = y_;
-static float prevRadius_ = radius_;
-
 void OnMouseMove(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 //	if (wParam & MK_LBUTTON) {
@@ -135,8 +147,8 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		RECT rect;
 		rect.left = 0;
 		rect.top = 0;
-		rect.right = 1920;
-		rect.bottom = 1080;
+		rect.right = pBMI->bmiHeader.biWidth;
+		rect.bottom = abs(pBMI->bmiHeader.biHeight);
 		FillRect(hMemDC, &rect, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	}
 	Graphics::FillAll(0xFF303030);
@@ -167,8 +179,8 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	rec.left = 0;
 	rec.top = 0;
-	rec.right = 1920;
-	rec.bottom = 1080;
+	rec.right = pBMI->bmiHeader.biWidth;
+	rec.bottom = abs(pBMI->bmiHeader.biHeight);
 	::InvalidateRect(hWnd, &rec, TRUE);
 	
 	TCHAR str[32];
