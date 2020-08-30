@@ -161,8 +161,13 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 #if 1
 //	Graphics::FillRect(x_-radius_, y_-radius_, diameter, diameter, 0x7F0000FF);
 //	Graphics::FillRect(x_-radius_+50, y_-radius_+50, diameter, diameter, 0x7F00FF00);
-	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x7F0000FF);
-	Graphics::DrawFilledCircleAA(x_+50, y_+50, diameter, 0x7F00FF00);
+	//Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x7F0000FF);
+	//Graphics::DrawFilledCircleAA(x_+50, y_+50, diameter, 0x7F00FF00);
+
+	Graphics::DrawFilledEllipse(x_+50, y_+50, 40, 400, 0x00FFFF00);
+	//Graphics::DrawFilledEllipse(x_+50, y_+50, 800, 100, 0);
+
+
 #else
 	{
 		using namespace Gdiplus;

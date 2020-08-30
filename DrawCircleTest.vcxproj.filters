@@ -60,6 +60,9 @@
     <ClCompile Include="graphics\graphics_impl_common.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\graphics_DrawFilledEllipse.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main_plus.h">

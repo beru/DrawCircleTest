@@ -110,6 +110,7 @@
     <ClCompile Include="graphics\graphics.cpp" />
     <ClCompile Include="graphics\graphics_DrawCircle.cpp" />
     <ClCompile Include="graphics\graphics_DrawFilledCircleAA.cpp" />
+    <ClCompile Include="graphics\graphics_DrawFilledEllipse.cpp" />
     <ClCompile Include="graphics\graphics_DrawRectangle.cpp" />
     <ClCompile Include="graphics\graphics_DrawTriangle.cpp" />
     <ClCompile Include="graphics\graphics_impl_common.cpp" />

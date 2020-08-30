@@ -38,6 +38,8 @@ void DrawCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircle(int16_t cx, int16_t cy, uint16_t diameter, pixel_t color);
 void DrawFilledCircleAA(float cx, float cy, float diameter, pixel_t color);
 
+void DrawFilledEllipse(float cx, float cy, float width, float height, pixel_t color);
+
 struct Vertex
 {
 	float x;

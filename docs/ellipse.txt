@@ -1,0 +1,8 @@
+
+
+https://stackoverflow.com/questions/10322341/simple-algorithm-for-drawing-filled-ellipse-in-c-c
+
+https://stackoverflow.com/questions/30443871/sqrt-based-filled-ellipse-pixel-drawing-function?noredirect=1&lq=1
+
+https://programmingfan.com/vcpp/how-to-draw-tilted-ellipse
+
