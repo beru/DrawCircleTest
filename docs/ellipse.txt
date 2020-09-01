@@ -6,3 +6,5 @@ https://stackoverflow.com/questions/30443871/sqrt-based-filled-ellipse-pixel-dra
 
 https://programmingfan.com/vcpp/how-to-draw-tilted-ellipse
 
+https://stackoverflow.com/questions/7946187/point-and-ellipse-rotated-position-test-algorithm
+
