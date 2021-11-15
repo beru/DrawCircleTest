@@ -13,7 +13,7 @@ void memset_32(
 	)
 {
 	assert(!((uint32_t)dest & 3));
-#if 0
+#if 1
 	// •Ï‚ÉÅ“K‰»‚·‚é‚æ‚è‚±‚Á‚¿‚Ì•û‚ª‘¬‚¢B
 	uint32_t* pInts = (uint32_t*) dest;
 	for (size_t i=0; i<count; ++i) {

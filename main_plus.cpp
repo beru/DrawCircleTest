@@ -165,12 +165,14 @@ void OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 #if 0
 	Graphics::DrawFilledCircleAA(x_, y_, diameter, 0x7F0000FF);
 	Graphics::DrawFilledCircleAA(x_+50, y_+50, diameter, 0x7F00FF00);
-#else
+#elif 0
 	Graphics::DrawFilledEllipse(x_+50, y_+50, 250, 500, 0x7F0000FF);
 	Graphics::DrawFilledEllipse(x_+150, y_+150, 150, 600, 0x7F00FF00);
+#else
+	Graphics::DrawFilledEllipse(x_+50, y_+50, 800, 100, 0x7F00FF00);
+	Graphics::DrawFilledEllipse(x_ + 450, y_ + 250, 100, 800, 0x7F00FF00);
+	Graphics::DrawFilledEllipse(x_ + 850, y_ + 450, 800, 200, 0x7F00FF00);
 #endif
-	//Graphics::DrawFilledEllipse(x_+50, y_+50, 800, 100, 0);
-
 
 #else
 	{
