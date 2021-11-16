@@ -32,7 +32,7 @@ namespace Graphics {
 				ratio *= ratio;
 				ratio *= ratio;
 				ratio *= 3.0f;
-				sharpness = 0.5 + ratio;
+				sharpness = 0.5f + ratio;
 			}
 			for (float x = -halfWidth; x <= +halfWidth; x++) {
 				if (height > width) {
@@ -41,17 +41,15 @@ namespace Graphics {
 					ratio *= ratio;
 					ratio *= ratio;
 					ratio *= 3.0f;
-					sharpness = 0.5 + ratio;
+					sharpness = 0.5f + ratio;
 				}
 				float xx = x * x;
 				float xxhh = xx * hh;
-				float dist = (1.0f - (xxhh + yyww) / wwhh) * whmin * sharpness;
-				if (dist >= 1.0f) {
+				float alpha = (1.0f - (xxhh + yyww) / wwhh) * whmin * sharpness;
+				if (alpha >= 1.0f) {
 					PutPixel(cx + x, cy + y, color);
-				}else if (dist <= 0.0f) {
-					dist = 0.0f;
-				}else {
-					PutPixel(cx + x, cy + y, AdjustAlpha(color, dist));
+				}else if (alpha > 0.0f) {
+					PutPixel(cx + x, cy + y, AdjustAlpha(color, alpha));
 				}
 			}
 		}
