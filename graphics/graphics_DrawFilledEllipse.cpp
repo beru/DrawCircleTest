@@ -2,7 +2,7 @@
 #include <vector>
 
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 
 #include "graphics.h"
 #include "graphics_impl_common.h"
@@ -11,18 +11,24 @@ namespace Graphics {
 
 	void DrawFilledEllipse(float cx, float cy, float width, float height, pixel_t color)
 	{
-		if (width == 0 || height == 0) {
+		if (width <= 0 || height <= 0) {
 			return;
 		}
-		float halfWidth = width / 2.0f;
-		float halfHeight = height / 2.0f;
+		float halfWidth = width * 0.5f;
+		float halfHeight = height * 0.5f;
+		int iHalfWidth = (int)((width + 0.5f) * 0.5f);
+		int iHalfHeight = (int)((height + 0.5f) * 0.5f);
 		float w = halfWidth;
 		float h = halfHeight;
 		float ww = w * w;
 		float hh = h * h;
 		float wwhh = ww * hh;
 		float whmin = std::min(halfWidth, halfHeight);
-		for (float y = -halfHeight; y <= +halfHeight; y++) {
+		float intpart;
+		float fracY = modf(cy, &intpart);
+		float fracX = modf(cx, &intpart);
+		for (int iy = -iHalfHeight; iy <= +iHalfHeight; ++iy) {
+			float y = (float)iy - fracY;
 			float yy = y * y;
 			float yyww = yy * ww;
 			float sharpness = 0.5f;
@@ -34,7 +40,8 @@ namespace Graphics {
 				ratio *= 3.0f;
 				sharpness = 0.5f + ratio;
 			}
-			for (float x = -halfWidth; x <= +halfWidth; x++) {
+			for (int ix = -iHalfWidth; ix <= +iHalfWidth; ++ix) {
+				float x = (float)ix - fracX;
 				if (height > width) {
 					ratio = abs(x) / halfWidth;
 					ratio = 1.0f - ratio;
